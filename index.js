@@ -1,13 +1,13 @@
 const stores = {};
 
-exports.VuexClass = function(options) {
+export function VuexClass(options) {
     if (typeof options === 'function') {
         assignStates(options);
-    } else {
+    }
+    else {
         return (target) => {
             let store = stores[target.name];
-            
-            if(typeof options.extend !== "undefined") {
+            if (typeof options.extend !== "undefined") {
                 for (let i = 0; i < Object.keys(options.extend).length; i++) {
                     const obj = options.extend[Object.keys(options.extend)[i]];
                     const extendStore = stores[obj.name];
@@ -17,33 +17,33 @@ exports.VuexClass = function(options) {
                     Object.assign(store.mutations, extendStore.mutations);
                 }
             }
-            
             assignStates(target);
-            
-            if (options.moduleName) store['moduleName'] = options.moduleName;
-            
-            if (options.persistent) store['persistent'] = options.persistent;
-            else store['persistent'] = false;
+            if (options.moduleName)
+                store['moduleName'] = options.moduleName;
+            if (options.persistent)
+                store['persistent'] = options.persistent;
+            else
+                store['persistent'] = false;
         };
     }
 }
 
-exports.Getter = function(target, key, descriptor) {
+export function Getter(target, key, descriptor) {
     initStore(target);
     stores[getClassName(target)].getters[key] = target[key];
 }
 
-exports.Mutation = function(target, key, descriptor) {
+export function Mutation(target, key, descriptor) {
     initStore(target);
     stores[getClassName(target)].mutations[key] = target[key];
 }
 
-exports.Action = function(target, key, descriptor) {
+export function Action(target, key, descriptor) {
     initStore(target);
     stores[getClassName(target)].actions[key] = target[key];
 }
 
-exports.ExportVuexStore = function(target) {
+export function ExportVuexStore(target) {
     return stores[target.name];
 }
 
