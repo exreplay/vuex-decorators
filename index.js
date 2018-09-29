@@ -70,7 +70,7 @@ function initStore(target) {
     if (typeof stores[getClassName(target)] === 'undefined') {
         stores[getClassName(target)] = {
             namespaced: true,
-            state: {},
+            state: () => { return {} },
             getters: {},
             actions: {},
             mutations: {}
