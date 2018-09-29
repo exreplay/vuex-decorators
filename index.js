@@ -53,10 +53,17 @@ function assignStates(Obj) {
     
     initStore(target);
     
+    const stateFactory = () => getStates(target, props);
+    stores[getClassName(target)].state = stateFactory;
+}
+
+function getStates(target, props) {
+    const s = {};
     for(let i = 0; i < Object.keys(props).length; i++) {
         const prop = props[Object.keys(props)[i]];
-        stores[getClassName(target)].state[prop] = target[prop];
+        s[prop] = target[prop];
     }
+    return s;
 }
 
 function initStore(target) {
