@@ -3,11 +3,11 @@ const stores = {};
 export function VuexClass(options) {
     if (typeof options === 'function') {
         assignStates(options);
-    }
-    else {
+    } else {
         return (target) => {
-            let store = stores[target.name];
-            if (typeof options.extend !== "undefined") {
+            let store = stores[getClassName(target)];
+
+            if (typeof options !== 'undefined' && typeof options.extend !== 'undefined') {
                 for (let i = 0; i < Object.keys(options.extend).length; i++) {
                     const obj = options.extend[Object.keys(options.extend)[i]];
                     const extendStore = stores[obj.name];
@@ -17,13 +17,11 @@ export function VuexClass(options) {
                     Object.assign(store.mutations, extendStore.mutations);
                 }
             }
+
             assignStates(target);
-            if (options.moduleName)
-                store['moduleName'] = options.moduleName;
-            if (options.persistent)
-                store['persistent'] = options.persistent;
-            else
-                store['persistent'] = false;
+            if (typeof options !== 'undefined') {
+                if (options.persistent) { store['persistent'] = options.persistent; } else { store['persistent'] = false; }
+            }
         };
     }
 }
@@ -44,12 +42,17 @@ export function Action(target, key, descriptor) {
 }
 
 export function ExportVuexStore(target) {
-    return stores[target.name];
+    return stores[getClassName(target)];
 }
 
 function assignStates(Obj) {
     const target = new Obj();
     const props = Object.getOwnPropertyNames(target);
+    if (typeof target['moduleName'] === 'undefined') {
+        console.error(`You need to define the 'moduleName' class variable inside '${target.constructor.name}'! Otherwise it won't be added to the Vuex Store!`);
+    }
+    stores[getClassName(target)]['moduleName'] = target['moduleName'];
+    props.splice(props.indexOf('moduleName'), 1);
     
     initStore(target);
     
@@ -59,7 +62,7 @@ function assignStates(Obj) {
 
 function getStates(target, props) {
     const s = {};
-    for(let i = 0; i < Object.keys(props).length; i++) {
+    for (let i = 0; i < Object.keys(props).length; i++) {
         const prop = props[Object.keys(props)[i]];
         s[prop] = target[prop];
     }
@@ -70,7 +73,7 @@ function initStore(target) {
     if (typeof stores[getClassName(target)] === 'undefined') {
         stores[getClassName(target)] = {
             namespaced: true,
-            state: () => { return {} },
+            state: () => { return {}; },
             getters: {},
             actions: {},
             mutations: {}
@@ -78,11 +81,8 @@ function initStore(target) {
     }
 }
 
-function getClassName(target) {
-    if (typeof target.constructor.name === 'undefined') {
-        const results = (/function\s([^(]{1,})\(/).exec((target.constructor).toString());
-        return (results && results.length > 1) ? results[1].trim() : '';
-    } else {
-        return target.constructor.name;
-    }
+function getClassName(Obj) {
+    let target = new Obj.constructor();
+    if (typeof target === 'function') target = new Obj();
+    return target['moduleName'];
 }
