@@ -21,11 +21,11 @@ const store = new Vuex.Store({
 });
 
 test(`check if action exists and is a function`, () => {
-    expect(tm.actions).toEqual({ test: expect.any(Function) });
+    expect(tm.actions).toEqual({ test: expect.any(Function), testMutation: expect.any(Function) });
 });
 
 test(`the action is present in the vuex store object`, () => {
-    expect(Object.keys(store._actions)).toEqual([ 'testModule/test' ]);
+    expect(Object.keys(store._actions)).toEqual([ 'testModule/test', 'testModule/testMutation' ]);
 });
 
 test(`dispatching the 'testMutation' action mutates the test state to 'testModified'`, async () => {

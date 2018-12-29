@@ -1,5 +1,7 @@
 # Vuex Decorators 2.0
 
+[![codecov](https://codecov.io/gh/exreplay/vuex-decorators/branch/master/graph/badge.svg)](https://codecov.io/gh/exreplay/vuex-decorators)
+
 > Be aware that this package only supports Vuex Modules and has no TypeScript support.
 
 Thanks to Decorators and Babel, we are able to transform the boring old way of writing Vuex into something way better.

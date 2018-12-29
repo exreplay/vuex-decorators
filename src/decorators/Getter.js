@@ -11,4 +11,3 @@ export default function Getter(target, key, descriptor) {
         return output;
     };
 }
-

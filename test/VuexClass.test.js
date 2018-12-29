@@ -4,24 +4,31 @@ import { VuexClass, ExportVuexStore } from '../src';
 
 Vue.use(Vuex);
 
-@VuexClass
-class TestModule {
-    moduleName = 'testModule';
-}
-
-const tm = ExportVuexStore(TestModule);
-
-const store = new Vuex.Store({
-    modules: {
-        [tm.moduleName]: tm
-    }
-});
-
 test(`moduleName of TestModule should be 'testModule'`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'testModule';
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
     expect(tm.moduleName).toBe('testModule');
 });
 
 test(`vuex store has a module named 'testModule'`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'testModule';
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
+    const store = new Vuex.Store({
+        modules: {
+            [tm.moduleName]: tm
+        }
+    });
+
     expect(Object.keys(store._modulesNamespaceMap)).toEqual(['testModule/']);
 });
 
@@ -70,4 +77,50 @@ test(`class should inherit from given class in extend option`, () => {
 
     expect(tm.state()).toEqual({ test: 'test', extendTest: 'extendTest' });
     expect(tm.getters).toEqual({ getExtendTest: expect.any(Function) });
+});
+
+test(`store should have a getter when using get`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'getterTestModule';
+        test = 'test';
+
+        get getTest() {
+            return this.test;
+        }
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
+    const store = new Vuex.Store({
+        modules: {
+            [tm.moduleName]: tm
+        }
+    });
+
+    expect(tm.getters).toEqual({ getTest: expect.any(Function) });
+    expect(Object.keys(store.getters)).toEqual([ 'getterTestModule/getTest' ]);
+});
+
+test(`getter should return value from test variable`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'getterTestModule';
+        test = 'test';
+
+        get getTest() {
+            return this.test;
+        }
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
+    const store = new Vuex.Store({
+        modules: {
+            [tm.moduleName]: tm
+        }
+    });
+
+    const test = store.getters['getterTestModule/getTest'];
+    expect(test).toBe('test');
 });

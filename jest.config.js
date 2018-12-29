@@ -3,7 +3,8 @@
 
 module.exports = {
   clearMocks: true,
-  coverageDirectory: "coverage",
+  coverageDirectory: "./coverage/",
+  collectCoverage: true,
   moduleFileExtensions: [
     "js"
   ],
