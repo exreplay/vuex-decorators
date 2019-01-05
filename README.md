@@ -1,4 +1,4 @@
-# Vuex Decorators 2.0
+# Vuex Decorators
 
 [![Build Status](https://travis-ci.com/exreplay/vuex-decorators.svg?branch=master)](https://travis-ci.com/exreplay/vuex-decorators)
 [![codecov](https://codecov.io/gh/exreplay/vuex-decorators/branch/master/graph/badge.svg)](https://codecov.io/gh/exreplay/vuex-decorators)
