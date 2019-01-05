@@ -1,6 +1,8 @@
 # Vuex Decorators 2.0
 
+[![Build Status](https://travis-ci.com/exreplay/vuex-decorators.svg?branch=master)](https://travis-ci.com/exreplay/vuex-decorators)
 [![codecov](https://codecov.io/gh/exreplay/vuex-decorators/branch/master/graph/badge.svg)](https://codecov.io/gh/exreplay/vuex-decorators)
+[![npm](https://img.shields.io/npm/v/@averjs/vuex-decorators.svg)](https://www.npmjs.com/package/@averjs/vuex-decorators)
 
 > Be aware that this package only supports Vuex Modules and has no TypeScript support.
 
