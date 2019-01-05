@@ -1,8 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { VuexClass, ExportVuexStore } from '../src';
+import { stores } from '../src/decorators/utils';
 
 Vue.use(Vuex);
+
+beforeEach(() => {
+    for (const store of Object.keys(stores)) delete stores[store];
+});
 
 test(`moduleName of TestModule should be 'testModule'`, () => {
     @VuexClass
@@ -82,7 +87,7 @@ test(`class should inherit from given class in extend option`, () => {
 test(`store should have a getter when using get`, () => {
     @VuexClass
     class TestModule {
-        moduleName = 'getterTestModule';
+        moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
@@ -99,13 +104,13 @@ test(`store should have a getter when using get`, () => {
     });
 
     expect(tm.getters).toEqual({ getTest: expect.any(Function) });
-    expect(Object.keys(store.getters)).toEqual([ 'getterTestModule/getTest' ]);
+    expect(Object.keys(store.getters)).toEqual([ 'testModule/getTest' ]);
 });
 
 test(`getter should return value from test variable`, () => {
     @VuexClass
     class TestModule {
-        moduleName = 'getterTestModule';
+        moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
@@ -121,14 +126,14 @@ test(`getter should return value from test variable`, () => {
         }
     });
 
-    const test = store.getters['getterTestModule/getTest'];
+    const test = store.getters['testModule/getTest'];
     expect(test).toBe('test');
 });
 
 test(`store should have a setter when using set`, () => {
     @VuexClass
     class TestModule {
-        moduleName = 'setterTestModule';
+        moduleName = 'testModule';
         test = 'test';
 
         set setTest(payload) {
@@ -145,13 +150,13 @@ test(`store should have a setter when using set`, () => {
     });
 
     expect(tm.mutations).toEqual({ setTest: expect.any(Function) });
-    expect(Object.keys(store._mutations)).toEqual([ 'setterTestModule/setTest' ]);
+    expect(Object.keys(store._mutations)).toEqual([ 'testModule/setTest' ]);
 });
 
 test(`set should mutate value and should be returned by getter`, () => {
     @VuexClass
     class TestModule {
-        moduleName = 'setterTestModule';
+        moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
@@ -170,7 +175,7 @@ test(`set should mutate value and should be returned by getter`, () => {
             [tm.moduleName]: tm
         }
     });
-    store.commit('setterTestModule/setTest', 'newTest');
-    const test = store.getters['setterTestModule/getTest'];
+    store.commit('testModule/setTest', 'newTest');
+    const test = store.getters['testModule/getTest'];
     expect(test).toBe('newTest');
 });

@@ -6,9 +6,9 @@ export default function VuexClass(options) {
         assignStates(options);
     } else {
         return (target) => {
-            let store = stores[getClassName(target)];
-
             assignStates(target);
+            
+            let store = stores[getClassName(target)];
 
             if (typeof options !== 'undefined' && typeof options.extend !== 'undefined') {
                 for (const obj of options.extend) {
