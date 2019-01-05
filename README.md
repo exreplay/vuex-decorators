@@ -61,8 +61,12 @@ export default class MyNewAwesomeVuexModuleFile {
 
     @HasGetterAndMutation variable = 'awesome';
 
-    get awesomeVariable() {
+    get getAwesomeVariable() {
         return this.variable;
+    }
+
+    set setAwesomeVariable(payload) {
+        this.variable = payload;
     }
 
     @Action awesomeAction(test) {
@@ -99,16 +103,22 @@ export default class TestStore {
     @HasGetterAndMutation testArray = [];
 
     // generates getter
-    get newTest() {
+    get getTest() {
         return map(this.test, test => test = '');
+    }
+
+    // generates mutation
+    set setTest(payload) {
+        this.test = payload
     }
 
     // another way of defining a getter
-    @Getter getTest() {
+    @Getter getterTest() {
         return map(this.test, test => test = '');
     }
 
-    @Mutation setTest(payload) {
+    // another way of defining a mutation
+    @Mutation mutationTest(payload) {
         this.test = payload;
     }
 
@@ -119,7 +129,7 @@ export default class TestStore {
                 method: 'GET'
             });
 
-            this.$store.commit('test', data.test);
+            this.$store.commit('setTest', data.test);
         } catch (err) {
             throw err;
         }
@@ -145,6 +155,7 @@ new Vuex.Store({
 
 ## ToDo
 
-- Use `set` for Mutations
-- Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
-- Complete writing tests
+- [*] Use `set` for Mutations
+- [ ] Create state, getter and mutation if there is a getter and setter named the same
+- [ ] Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
+- [ ] Complete writing tests

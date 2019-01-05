@@ -7,14 +7,15 @@ class TestModule {
 
 test(`check if object is a valid vuex object`, () => {
     const tm = ExportVuexStore(TestModule);
-    expect.objectContaining({
-        namespace: true,
-        state: expect.any(Function),
-        getters: expect.any(Object),
-        actions: expect.any(Object),
-        mutations: expect.any(Object),
+    const obj = {
+        namespaced: true,
+        getters: {},
+        actions: {},
+        mutations: {},
         moduleName: 'testModule'
-    })
+    };
+    expect(JSON.stringify(tm)).toEqual(JSON.stringify(obj));
+    expect(tm.state).toEqual(expect.any(Function));
 })
 
 test(`tm should be plain object with moduleName prop`, () => {

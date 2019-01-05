@@ -124,3 +124,53 @@ test(`getter should return value from test variable`, () => {
     const test = store.getters['getterTestModule/getTest'];
     expect(test).toBe('test');
 });
+
+test(`store should have a setter when using set`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'setterTestModule';
+        test = 'test';
+
+        set setTest(payload) {
+            this.test = payload;
+        }
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
+    const store = new Vuex.Store({
+        modules: {
+            [tm.moduleName]: tm
+        }
+    });
+
+    expect(tm.mutations).toEqual({ setTest: expect.any(Function) });
+    expect(Object.keys(store._mutations)).toEqual([ 'setterTestModule/setTest' ]);
+});
+
+test(`set should mutate value and should be returned by getter`, () => {
+    @VuexClass
+    class TestModule {
+        moduleName = 'setterTestModule';
+        test = 'test';
+
+        get getTest() {
+            return this.test;
+        }
+
+        set setTest(payload) {
+            this.test = payload;
+        }
+    }
+
+    const tm = ExportVuexStore(TestModule);
+
+    const store = new Vuex.Store({
+        modules: {
+            [tm.moduleName]: tm
+        }
+    });
+    store.commit('setterTestModule/setTest', 'newTest');
+    const test = store.getters['setterTestModule/getTest'];
+    expect(test).toBe('newTest');
+});
