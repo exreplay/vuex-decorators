@@ -157,7 +157,7 @@ new Vuex.Store({
 
 ## ToDo
 
-- [*] Use `set` for Mutations
+- [x] Use `set` for Mutations
 - [ ] Create state, getter and mutation if there is a getter and setter named the same
 - [ ] Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
 - [ ] Complete writing tests
