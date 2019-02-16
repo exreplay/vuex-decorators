@@ -18,10 +18,13 @@ export function assignStates(Obj) {
     const proto = Object.getPrototypeOf(target);
     const functions = Object.getOwnPropertyNames(proto);
 
+    const getters = [];
+    const mutations = [];
+    
     for(const func of functions) {
         const descriptor = Object.getOwnPropertyDescriptor(proto, func);
         if(descriptor && descriptor.get) {
-            stores[getClassName(target)].getters[func] = (state, getters, rootState, rootGetters) => {
+            getters[func] = (state, getters, rootState, rootGetters) => {
                 const thisObject = { $store: { state, getters, rootState, rootGetters }};
                 for(const key of Object.keys(state)) {
                     Object.assign(thisObject, { [key]: state[key] });
@@ -30,11 +33,14 @@ export function assignStates(Obj) {
                 return output;
             };
         } else if(descriptor && descriptor.set) {
-            stores[getClassName(target)].mutations[func] = (state, payload) => {
+            mutations[func] = (state, payload) => {
                 descriptor.set.call(state, payload);
             };
         }
     }
+
+    Object.assign(stores[getClassName(target)].getters, getters);
+    Object.assign(stores[getClassName(target)].mutations, mutations);
 }
 
 export function getStates(target, props) {
