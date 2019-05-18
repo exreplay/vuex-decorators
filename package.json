@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/exreplay/vuex-decorators/issues"
   },
-  "main": "build/vuex-decorators.min.js",
+  "main": "build/vuex-decorators.cjs.min.js",
   "files": [
     "/dist"
   ],
