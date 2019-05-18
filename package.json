@@ -1,6 +1,6 @@
 {
   "name": "@averjs/vuex-decorators",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "Decorators for Vuex.",
   "keywords": [
     "vue",
