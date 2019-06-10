@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/exreplay/vuex-decorators/branch/master/graph/badge.svg)](https://codecov.io/gh/exreplay/vuex-decorators)
 [![npm](https://img.shields.io/npm/v/@averjs/vuex-decorators.svg)](https://www.npmjs.com/package/@averjs/vuex-decorators)
 
-> Be aware that this package only supports Vuex Modules and has no TypeScript support.
+> Be aware that this package only supports Vuex Modules.
 
 Thanks to Decorators and Babel, we are able to transform the boring old way of writing Vuex into something way better.
 
@@ -76,6 +76,45 @@ export default class MyNewAwesomeVuexModuleFile {
     }
 }
 ```
+
+### Typescript
+
+You can use this package with Typescript but there are currently no types provided for this package. To make Typescript not complain about your Stores, create a class which every other is extending from.
+
+```ts
+// VuexDecorators.ts
+import { Commit, Dispatch } from 'Vuex';
+
+export default class VuexDecorators {
+    protected $store: any
+    protected state: any
+    protected rootState: any
+    protected commit: Commit
+    protected dispatch: Dispatch
+    protected getters: any
+    protected rootGetters: any
+}
+```
+
+```ts
+// TestStore.ts
+
+import { VuexClass } from '@averjs/vuex-decorators';
+import VuexDecorators from './VuexDecorators';
+
+@VuexClass
+export default class TestStore extends VuexDecorators {
+    //...
+}
+```
+
+And because there are no types provided, create the `averjs__vuex-decorators.d.ts` file inside your projects `types` folder which holds the following.
+
+```ts
+declare module '@averjs/vuex-decorators';
+```
+
+Im currently working on better Typescript support. PRs are welcome.
 
 ### Decorators
 
@@ -157,7 +196,8 @@ new Vuex.Store({
 
 ## ToDo
 
-- [x] Use `set` for Mutations
 - [ ] Create state, getter and mutation if there is a getter and setter named the same
 - [ ] Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
-- [ ] Complete writing tests
+- [ ] Better Typescript support
+- [x] Use `set` for Mutations
+- [x] Complete writing tests
