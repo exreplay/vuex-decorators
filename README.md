@@ -79,7 +79,7 @@ export default class MyNewAwesomeVuexModuleFile {
 
 ### Typescript
 
-You can use this package with Typescript but there are currently no types provided for this package. To make Typescript not complain about your Stores, create a class which every other is extending from.
+You can use this package with Typescript but there are currently no types provided. To make Typescript not complain about your Stores, create a class which every other is extending from.
 
 ```ts
 // VuexDecorators.ts
@@ -108,7 +108,7 @@ export default class TestStore extends VuexDecorators {
 }
 ```
 
-And because there are no types provided, create the `averjs__vuex-decorators.d.ts` file inside your projects `types` folder which holds the following.
+And because there are no types, create the `averjs__vuex-decorators.d.ts` file inside your projects `types` folder which holds the following.
 
 ```ts
 declare module '@averjs/vuex-decorators';
