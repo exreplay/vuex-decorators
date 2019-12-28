@@ -1,18 +1,12 @@
 module.exports = {
   'env': {
     'browser': true,
-    'node': true,
-    'jest/globals': true
+    'node': true
   },
   'extends': [
     'standard',
     'plugin:import/errors',
-    'plugin:import/warnings',
-    'plugin:vue/recommended'
-  ],
-  'plugins': [
-    'vue',
-    'jest'
+    'plugin:import/warnings'
   ],
   'rules': {
     'import/no-unresolved': 0,

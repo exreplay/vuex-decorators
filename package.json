@@ -25,7 +25,8 @@
   ],
   "scripts": {
     "test": "jest --coverage && codecov",
-    "build": "rollup --config"
+    "build": "rollup --config",
+    "lint": "eslint --ext .js ."
   },
   "devDependencies": {
     "@babel/core": "7.7.7",
