@@ -3,12 +3,12 @@
 
 module.exports = {
   clearMocks: true,
-  coverageDirectory: "./coverage/",
+  coverageDirectory: './coverage/',
   collectCoverage: true,
   moduleFileExtensions: [
-    "js"
+    'js'
   ],
   transform: {
-    "^.+\\.js?$": "babel-jest"
+    '^.+\\.js?$': 'babel-jest'
   }
 };
