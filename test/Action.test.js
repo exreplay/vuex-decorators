@@ -16,20 +16,20 @@ class TestModule {
 const tm = ExportVuexStore(TestModule);
 
 const store = new Vuex.Store({
-    modules: {
-        [tm.moduleName]: tm
-    }
+  modules: {
+    [tm.moduleName]: tm
+  }
 });
 
-test(`check if action exists and is a function`, () => {
-    expect(tm.actions).toEqual({ test: expect.any(Function), testMutation: expect.any(Function) });
+test('check if action exists and is a function', () => {
+  expect(tm.actions).toEqual({ test: expect.any(Function), testMutation: expect.any(Function) });
 });
 
-test(`the action is present in the vuex store object`, () => {
-    expect(Object.keys(store._actions)).toEqual([ 'testModule/test', 'testModule/testMutation' ]);
+test('the action is present in the vuex store object', () => {
+  expect(Object.keys(store._actions)).toEqual([ 'testModule/test', 'testModule/testMutation' ]);
 });
 
-test(`dispatching the 'testMutation' action mutates the test state to 'testModified'`, async () => {
-    await store.dispatch('testModule/testMutation');
-    expect(store.state.testModule.test).toBe('testModified');
+test('dispatching the \'testMutation\' action mutates the test state to \'testModified\'', async() => {
+  await store.dispatch('testModule/testMutation');
+  expect(store.state.testModule.test).toBe('testModified');
 });

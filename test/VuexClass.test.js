@@ -6,12 +6,12 @@ import { stores } from '../src/decorators/utils';
 Vue.use(Vuex);
 
 beforeEach(() => {
-    for (const store of Object.keys(stores)) delete stores[store];
+  for (const store of Object.keys(stores)) delete stores[store];
 });
 
-test(`moduleName of TestModule should be 'testModule'`, () => {
+test('moduleName of TestModule should be \'testModule\'', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
     }
 
@@ -20,26 +20,26 @@ test(`moduleName of TestModule should be 'testModule'`, () => {
     expect(tm.moduleName).toBe('testModule');
 });
 
-test(`vuex store has a module named 'testModule'`, () => {
+test('vuex store has a module named \'testModule\'', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
     }
 
     const tm = ExportVuexStore(TestModule);
 
     const store = new Vuex.Store({
-        modules: {
-            [tm.moduleName]: tm
-        }
+      modules: {
+        [tm.moduleName]: tm
+      }
     });
 
-    expect(Object.keys(store._modulesNamespaceMap)).toEqual(['testModule/']);
+    expect(Object.keys(store._modulesNamespaceMap)).toEqual([ 'testModule/' ]);
 });
 
-test(`persistent class option is getting passed to object`, () => {
+test('persistent class option is getting passed to object', () => {
     @VuexClass({ persistent: [ 'test' ] })
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
     }
 
@@ -48,9 +48,9 @@ test(`persistent class option is getting passed to object`, () => {
     expect(tm.persistent).toEqual([ 'test' ]);
 });
 
-test(`persistent class option should be false when not set`, () => {
+test('persistent class option should be false when not set', () => {
     @VuexClass({})
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
     }
 
@@ -59,15 +59,15 @@ test(`persistent class option should be false when not set`, () => {
     expect(tm.persistent).toBe(false);
 });
 
-test(`class should inherit from given class in extend option`, () => {
+test('class should inherit from given class in extend option', () => {
     @VuexClass
-    class ExtendModule {
+  class ExtendModule {
         moduleName = 'extendModule';
         
         extendTest = 'extendTest';
 
         get getExtendTest() {
-            return this.extendTest;
+          return this.extendTest;
         }
     }
 
@@ -84,96 +84,96 @@ test(`class should inherit from given class in extend option`, () => {
     expect(tm.getters).toEqual({ getExtendTest: expect.any(Function) });
 });
 
-test(`store should have a getter when using get`, () => {
+test('store should have a getter when using get', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
-            return this.test;
+          return this.test;
         }
     }
 
     const tm = ExportVuexStore(TestModule);
 
     const store = new Vuex.Store({
-        modules: {
-            [tm.moduleName]: tm
-        }
+      modules: {
+        [tm.moduleName]: tm
+      }
     });
 
     expect(tm.getters).toEqual({ getTest: expect.any(Function) });
     expect(Object.keys(store.getters)).toEqual([ 'testModule/getTest' ]);
 });
 
-test(`getter should return value from test variable`, () => {
+test('getter should return value from test variable', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
-            return this.test;
+          return this.test;
         }
     }
 
     const tm = ExportVuexStore(TestModule);
 
     const store = new Vuex.Store({
-        modules: {
-            [tm.moduleName]: tm
-        }
+      modules: {
+        [tm.moduleName]: tm
+      }
     });
 
     const test = store.getters['testModule/getTest'];
     expect(test).toBe('test');
 });
 
-test(`store should have a setter when using set`, () => {
+test('store should have a setter when using set', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
         test = 'test';
 
         set setTest(payload) {
-            this.test = payload;
+          this.test = payload;
         }
     }
 
     const tm = ExportVuexStore(TestModule);
 
     const store = new Vuex.Store({
-        modules: {
-            [tm.moduleName]: tm
-        }
+      modules: {
+        [tm.moduleName]: tm
+      }
     });
 
     expect(tm.mutations).toEqual({ setTest: expect.any(Function) });
     expect(Object.keys(store._mutations)).toEqual([ 'testModule/setTest' ]);
 });
 
-test(`set should mutate value and should be returned by getter`, () => {
+test('set should mutate value and should be returned by getter', () => {
     @VuexClass
-    class TestModule {
+  class TestModule {
         moduleName = 'testModule';
         test = 'test';
 
         get getTest() {
-            return this.test;
+          return this.test;
         }
 
         set setTest(payload) {
-            this.test = payload;
+          this.test = payload;
         }
     }
 
     const tm = ExportVuexStore(TestModule);
 
     const store = new Vuex.Store({
-        modules: {
-            [tm.moduleName]: tm
-        }
+      modules: {
+        [tm.moduleName]: tm
+      }
     });
     store.commit('testModule/setTest', 'newTest');
     const test = store.getters['testModule/getTest'];
