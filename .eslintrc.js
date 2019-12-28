@@ -1,14 +1,24 @@
 module.exports = {
-  'env': {
-    'browser': true,
-    'node': true
+  parser: 'babel-eslint',
+  parserOptions: {
+      ecmaFeatures: {
+          legacyDecorators: true
+      }
   },
-  'extends': [
+  env: {
+    browser: true,
+    node: true,
+    'jest/globals': true
+  },
+  extends: [
     'standard',
     'plugin:import/errors',
     'plugin:import/warnings'
   ],
-  'rules': {
+  'plugins': [
+    'jest'
+  ],
+  rules: {
     'import/no-unresolved': 0,
 
     'array-bracket-spacing': ["error", "always"],
