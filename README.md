@@ -1,12 +1,15 @@
 # Vuex Decorators
 
-[![Build Status](https://travis-ci.com/exreplay/vuex-decorators.svg?branch=master)](https://travis-ci.com/exreplay/vuex-decorators)
-[![codecov](https://codecov.io/gh/exreplay/vuex-decorators/branch/master/graph/badge.svg)](https://codecov.io/gh/exreplay/vuex-decorators)
-[![npm](https://img.shields.io/npm/v/@averjs/vuex-decorators.svg)](https://www.npmjs.com/package/@averjs/vuex-decorators)
+<p align="center">
+    <a href="https://www.npmjs.com/package/@averjs/vuex-decorators"><img src="https://badgen.net/npm/v/@averjs/vuex-decorators?icon=npm" alt="Version"></a>
+    <img src="https://img.shields.io/npm/dm/@averjs/vuex-decorators.svg" alt="Downloads"></a>
+    <a href="https://circleci.com/gh/exreplay/averjs-vuex-decorators"><img src="https://circleci.com/gh/exreplay/averjs-vuex-decorators.svg?style=shield" alt="CircleCi"></a>
+    <a href="https://codecov.io/gh/exreplay/averjs-vuex-decorators"><img src="https://codecov.io/gh/exreplay/averjs-vuex-decorators/branch/development/graph/badge.svg" alt="Codecov"></a>
+</p>
 
 > Be aware that this package only supports Vuex Modules.
 
-Thanks to Decorators and Babel, we are able to transform the boring old way of writing Vuex into something way better.
+Thanks to Decorators in Typescript and Babel, we are able to transform the boring old way of writing Vuex into something way better.
 
 ## Installation
 
@@ -18,10 +21,16 @@ npm install @averjs/vuex-decorators
 yarn add @averjs/vuex-decorators
 ```
 
-In order for the decorators and the classes to work, you need have a few babel plugins installed. Also keep in mind that if you want to use the `@HasGetterAndMutation`-Decorator for example, the babel plugins have to be >= 7.2.
+### Babel
+
+In order for the Decorators and the classes to work, you need have a few babel plugins installed. Also keep in mind that if you want to use the `@HasGetterAndMutation`-Decorator for example, the babel plugins have to be >= 7.2.
 
 - @babel/plugin-proposal-class-properties
 - @babel/plugin-proposal-decorators
+
+### Typescript
+
+To make this plugin work with Typescript the only thing you have to do is to enable `experimentalDecorators` in your `tsconfig.json`.
 
 ## How it works
 
@@ -48,17 +57,17 @@ export default class MyNewAwesomeVuexModuleFile {
 }
 ```
 
-Every function is getting called internally by using the `call() method`. That lets you call the states by using `this`. To keep calling `dispatch` and `commit` familiar with the typical vue notation, you can use `this.$store` inside your actions or getters. You can find what can be called by `this.$store` by referring to the Vuex documentation.
+Every function is getting called internally by using the `call() method`. That lets you call the states by using `this`. To keep calling `dispatch` and `commit` familiar with the typical vue notation, you can use `this.$store` inside your actions or getters. For Typescript there is a class called `VuexModule`, which you can import and extend from to provide you with typings for `this.$store`. You can find what can be called by `this.$store` by referring to the Vuex documentation.
 
 - https://vuex.vuejs.org/api/#actions
 - https://vuex.vuejs.org/api/#getters
 
 ```js
 // MyNewAwesomeVuexModuleFile.js
-import { VuexClass, Action, HasGetterAndMutation } from '@averjs/vuex-decorators';
+import { VuexClass, Action, HasGetterAndMutation, /* typescript */ VuexModule } from '@averjs/vuex-decorators';
 
 @VuexClass
-export default class MyNewAwesomeVuexModuleFile {
+export default class MyNewAwesomeVuexModuleFile /* typescript */ extends VuexModule {
     moduleName = 'myAwesomeVuexModule';
 
     @HasGetterAndMutation variable = 'awesome';
@@ -76,45 +85,6 @@ export default class MyNewAwesomeVuexModuleFile {
     }
 }
 ```
-
-### Typescript
-
-You can use this package with Typescript but there are currently no types provided. To make Typescript not complain about your Stores, create a class which every other is extending from.
-
-```ts
-// VuexDecorators.ts
-import { Commit, Dispatch } from 'Vuex';
-
-export default class VuexDecorators {
-    protected $store: any
-    protected state: any
-    protected rootState: any
-    protected commit: Commit
-    protected dispatch: Dispatch
-    protected getters: any
-    protected rootGetters: any
-}
-```
-
-```ts
-// TestStore.ts
-
-import { VuexClass } from '@averjs/vuex-decorators';
-import VuexDecorators from './VuexDecorators';
-
-@VuexClass
-export default class TestStore extends VuexDecorators {
-    //...
-}
-```
-
-And because there are no types, create the `averjs__vuex-decorators.d.ts` file inside your projects `types` folder which holds the following.
-
-```ts
-declare module '@averjs/vuex-decorators';
-```
-
-Im currently working on better Typescript support. PRs are welcome.
 
 ### Decorators
 
@@ -198,6 +168,6 @@ new Vuex.Store({
 
 - [ ] Create state, getter and mutation if there is a getter and setter named the same
 - [ ] Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
-- [ ] Better Typescript support
+- [x] Better Typescript support
 - [x] Use `set` for Mutations
 - [x] Complete writing tests
