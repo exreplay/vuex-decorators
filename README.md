@@ -100,12 +100,12 @@ export default class MyNewAwesomeVuexModuleFile /* typescript */ extends VuexMod
 
 ### Vuex file
 ```js
-import { VuexClass, Action, Getter, Mutation, HasGetterAndMutation } from '@averjs/vuex-decorators';
+import { VuexClass, VuexModule, Action, Getter, Mutation, HasGetterAndMutation } from '@averjs/vuex-decorators';
 import axios from 'axios';
 import map from 'lodash/map';
 
 @VuexClass
-export default class TestStore {
+export default class TestStore extends VuexModule {
     moduleName = 'test';
 
     test = 'test';
