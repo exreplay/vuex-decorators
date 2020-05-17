@@ -2,7 +2,7 @@ import { VuexClass, ExportVuexStore } from '../src';
 
 @VuexClass
 class TestModule {
-    moduleName = 'testModule';
+  moduleName = 'testModule';
 }
 
 test('check if object is a valid vuex object', () => {
@@ -12,7 +12,7 @@ test('check if object is a valid vuex object', () => {
     getters: {},
     actions: {},
     mutations: {},
-    moduleName: 'testModule'
+    moduleName: 'testModule',
   };
   expect(JSON.stringify(tm)).toEqual(JSON.stringify(obj));
   expect(tm.state).toEqual(expect.any(Function));
@@ -25,5 +25,5 @@ test('tm should be plain object with moduleName prop', () => {
 
 test('tm object should have a key like the moduleName', () => {
   const tm = ExportVuexStore(TestModule, true);
-  expect(Object.keys(tm)).toEqual([ 'testModule' ]);
+  expect(Object.keys(tm)).toEqual(['testModule']);
 });
