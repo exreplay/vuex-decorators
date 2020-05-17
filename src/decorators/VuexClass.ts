@@ -11,11 +11,13 @@ export class VuexModule<S = ThisType<any>, R = any> {
   $store!: ActionContext<S, R>;
 }
 
-export function VuexClass<S>(module?: Function): void;
+export function VuexClass<S>(module?: Function & VuexClassOptions): void;
 export function VuexClass<S>(options?: VuexClassOptions): ClassDecorator;
 
-export function VuexClass<S>(options?: VuexClassOptions | Function) {
-  if (typeof options === 'function') {
+export function VuexClass<S>(
+  options?: VuexClassOptions | (Function & VuexClassOptions)
+) {
+  if (typeof (options as any) === 'function') {
     assignStates(options);
   } else {
     return (target: S) => {
