@@ -1,10 +1,14 @@
-import { stores, assignStates, initStore, getStates } from '../src/decorators/utils';
+import {
+  stores,
+  assignStates,
+  initStore,
+  getStates,
+} from '../src/decorators/utils';
 
 console.error = jest.fn();
 
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
-  console.error.mockClear();
 });
 
 test('assignStates should throw a error when moduleName is not present', () => {
@@ -25,13 +29,15 @@ test('check if props are correctly extracted from class', () => {
 });
 
 test('check if initializing store creates a valid vuex store object and state is a function and returns a object', () => {
-  class TestModule { moduleName = 'testModule'; }
+  class TestModule {
+    moduleName = 'testModule';
+  }
   initStore(TestModule);
   const obj = {
     namespaced: true,
     getters: {},
     actions: {},
-    mutations: {}
+    mutations: {},
   };
   expect(JSON.stringify(stores.testModule)).toEqual(JSON.stringify(obj));
   expect(stores.testModule.state()).toEqual({});
