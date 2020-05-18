@@ -30,6 +30,14 @@ class TestModule extends VuexModule {
 
   @HasGetterAndMutation public test = 'test';
 
+  get getSetTest() {
+    return this.test;
+  }
+
+  set getSetTest(val) {
+    this.test = val;
+  }
+
   /**
    * Returns the char length of the test variable.
    */
@@ -141,6 +149,9 @@ test('should generate static getters correctly', () => {
       testCharCountTimes2: {
         get() {},
       },
+      getSetTest: {
+        get() {},
+      },
       testCharCount: {
         get() {},
       },
@@ -158,6 +169,7 @@ test('should generate static getters correctly', () => {
 test('should generate static mutations correctly', () => {
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticMutations(stores.testModule, propertiesToDefine);
+
   expect(JSON.stringify(propertiesToDefine)).toEqual(
     JSON.stringify({
       test: {
@@ -165,6 +177,9 @@ test('should generate static mutations correctly', () => {
       },
       setTest: {
         value() {},
+      },
+      getSetTest: {
+        set() {},
       },
     })
   );
