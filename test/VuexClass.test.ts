@@ -58,7 +58,7 @@ test('persistent class option should be undefined when not set', () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  expect(tm.persistent).toBe(undefined);
+  expect(tm.persistent).toBeFalsy();
 });
 
 test('class should inherit from given class in extend option', () => {

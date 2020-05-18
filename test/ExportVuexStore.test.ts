@@ -13,6 +13,7 @@ test('check if object is a valid vuex object', () => {
     actions: {},
     mutations: {},
     moduleName: 'testModule',
+    persistent: false,
   };
   expect(JSON.stringify(tm)).toEqual(JSON.stringify(obj));
   expect(tm.state).toEqual(expect.any(Function));
