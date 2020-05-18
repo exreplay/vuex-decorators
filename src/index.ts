@@ -5,6 +5,8 @@ import HasGetter from './decorators/HasGetter';
 import HasGetterAndMutation from './decorators/HasGetterAndMutation';
 import Mutation from './decorators/Mutation';
 import { VuexClass, VuexModule } from './decorators/VuexClass';
+import { getModule } from './decorators/StaticGenerators';
+import { config } from './decorators/utils';
 
 export {
   Action,
@@ -15,4 +17,6 @@ export {
   Mutation,
   VuexClass,
   VuexModule,
+  getModule,
+  config,
 };
