@@ -60,7 +60,8 @@ export function assignStates<S>(Obj: any) {
         const output = (descriptor.get as Function).call(thisObject);
         return output;
       };
-    } else if (descriptor && descriptor.set) {
+    }
+    if (descriptor && descriptor.set) {
       mutations[func] = (state: S, payload: any) => {
         (descriptor.set as Function).call(state, payload);
       };
