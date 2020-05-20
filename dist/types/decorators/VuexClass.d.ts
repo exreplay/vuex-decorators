@@ -6,6 +6,6 @@ interface VuexClassOptions {
 export declare class VuexModule<S = ThisType<any>, R = any> {
     $store: ActionContext<S, R>;
 }
-export declare function VuexClass<S>(module?: Function): void;
-export declare function VuexClass<S>(options?: VuexClassOptions): ClassDecorator;
+export declare function VuexClass(module: Function & VuexClassOptions): void;
+export declare function VuexClass(options: VuexClassOptions): ClassDecorator;
 export {};

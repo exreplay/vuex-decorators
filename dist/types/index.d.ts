@@ -5,4 +5,6 @@ import HasGetter from './decorators/HasGetter';
 import HasGetterAndMutation from './decorators/HasGetterAndMutation';
 import Mutation from './decorators/Mutation';
 import { VuexClass, VuexModule } from './decorators/VuexClass';
-export { Action, ExportVuexStore, Getter, HasGetter, HasGetterAndMutation, Mutation, VuexClass, VuexModule, };
+import { getModule } from './decorators/StaticGenerators';
+import { config } from './decorators/utils';
+export { Action, ExportVuexStore, Getter, HasGetter, HasGetterAndMutation, Mutation, VuexClass, VuexModule, getModule, config, };

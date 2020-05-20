@@ -7,19 +7,30 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var Vue = _interopDefault(require('vue'));
 
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 
 function __awaiter(thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -59,6 +70,7 @@ function __generator(thisArg, body) {
     }
 }
 
+var config = {};
 var stores = {};
 function assignStates(Obj) {
     var target = new Obj();
@@ -95,7 +107,7 @@ function assignStates(Obj) {
                 return output;
             };
         }
-        else if (descriptor && descriptor.set) {
+        if (descriptor && descriptor.set) {
             mutations[func] = function (state, payload) {
                 descriptor.set.call(state, payload);
             };
@@ -202,6 +214,114 @@ function Mutation(target, key, descriptor) {
     };
 }
 
+function generateStaticStates(store, propertiesToDefine) {
+    var _loop_1 = function (state) {
+        propertiesToDefine[state] = {
+            get: function () {
+                var _a;
+                return (_a = config.store) === null || _a === void 0 ? void 0 : _a.state[store.moduleName][state];
+            },
+        };
+    };
+    for (var _i = 0, _a = Object.keys(store.state()); _i < _a.length; _i++) {
+        var state = _a[_i];
+        _loop_1(state);
+    }
+    return propertiesToDefine;
+}
+function generateStaticGetters(store, propertiesToDefine) {
+    var _loop_2 = function (getter) {
+        propertiesToDefine[getter] = {
+            get: function () {
+                var _a;
+                return (_a = config.store) === null || _a === void 0 ? void 0 : _a.getters[store.moduleName + "/" + getter];
+            },
+        };
+    };
+    for (var _i = 0, _a = Object.keys(store.getters); _i < _a.length; _i++) {
+        var getter = _a[_i];
+        _loop_2(getter);
+    }
+    return propertiesToDefine;
+}
+function generateStaticMutations(store, propertiesToDefine) {
+    var _loop_3 = function (mutation) {
+        if (propertiesToDefine[mutation]) {
+            var temp = propertiesToDefine[mutation];
+            propertiesToDefine[mutation] = __assign(__assign({}, temp), { set: function (val) {
+                    var _a;
+                    (_a = config.store) === null || _a === void 0 ? void 0 : _a.commit(store.moduleName + "/" + mutation, val);
+                } });
+        }
+        else {
+            propertiesToDefine[mutation] = {
+                value: function (val) {
+                    var _a;
+                    (_a = config.store) === null || _a === void 0 ? void 0 : _a.commit(store.moduleName + "/" + mutation, val);
+                },
+            };
+        }
+    };
+    for (var _i = 0, _a = Object.keys(store.mutations); _i < _a.length; _i++) {
+        var mutation = _a[_i];
+        _loop_3(mutation);
+    }
+    return propertiesToDefine;
+}
+function generateStaticActions(store, propertiesToDefine) {
+    var _this = this;
+    var _loop_4 = function (action) {
+        propertiesToDefine[action] = {
+            value: function (val) { return __awaiter(_this, void 0, void 0, function () {
+                var _a;
+                return __generator(this, function (_b) {
+                    return [2 /*return*/, (_a = config.store) === null || _a === void 0 ? void 0 : _a.dispatch(store.moduleName + "/" + action, val)];
+                });
+            }); },
+        };
+    };
+    for (var _i = 0, _a = Object.keys(store.actions); _i < _a.length; _i++) {
+        var action = _a[_i];
+        _loop_4(action);
+    }
+    return propertiesToDefine;
+}
+function getModule(module) {
+    return module;
+}
+
+function generateVuexClass(options) {
+    return function (constructor) {
+        var target = constructor;
+        assignStates(target);
+        var store = stores[getClassName(target)];
+        var _loop_1 = function (obj) {
+            var extendStore = ExportVuexStore(obj);
+            var oldState = store.state();
+            var newState = extendStore.state();
+            var stateFactory = function () { return Object.assign(oldState, newState); };
+            store.state = stateFactory;
+            Object.assign(store.getters, extendStore.getters);
+            Object.assign(store.actions, extendStore.actions);
+            Object.assign(store.mutations, extendStore.mutations);
+        };
+        for (var _i = 0, _a = (options === null || options === void 0 ? void 0 : options.extend) || []; _i < _a.length; _i++) {
+            var obj = _a[_i];
+            _loop_1(obj);
+        }
+        if (options === null || options === void 0 ? void 0 : options.persistent)
+            store.persistent = options.persistent;
+        else
+            store.persistent = false;
+        var propertiesToDefine = {};
+        generateStaticStates(store, propertiesToDefine);
+        generateStaticGetters(store, propertiesToDefine);
+        generateStaticMutations(store, propertiesToDefine);
+        generateStaticActions(store, propertiesToDefine);
+        Object.defineProperties(constructor, propertiesToDefine);
+        return constructor;
+    };
+}
 var VuexModule = /** @class */ (function () {
     function VuexModule() {
     }
@@ -209,31 +329,10 @@ var VuexModule = /** @class */ (function () {
 }());
 function VuexClass(options) {
     if (typeof options === 'function') {
-        assignStates(options);
+        generateVuexClass({})(options);
     }
     else {
-        return function (target) {
-            assignStates(target);
-            var store = stores[getClassName(target)];
-            var _loop_1 = function (obj) {
-                var extendStore = ExportVuexStore(obj);
-                var oldState = store.state();
-                var newState = extendStore.state();
-                var stateFactory = function () { return Object.assign(oldState, newState); };
-                store.state = stateFactory;
-                Object.assign(store.getters, extendStore.getters);
-                Object.assign(store.actions, extendStore.actions);
-                Object.assign(store.mutations, extendStore.mutations);
-            };
-            for (var _i = 0, _a = (options === null || options === void 0 ? void 0 : options.extend) || []; _i < _a.length; _i++) {
-                var obj = _a[_i];
-                _loop_1(obj);
-            }
-            if (options === null || options === void 0 ? void 0 : options.persistent)
-                store.persistent = options.persistent;
-            else
-                store.persistent = false;
-        };
+        return generateVuexClass(options);
     }
 }
 
@@ -245,4 +344,6 @@ exports.HasGetterAndMutation = HasGetterAndMutation;
 exports.Mutation = Mutation;
 exports.VuexClass = VuexClass;
 exports.VuexModule = VuexModule;
+exports.config = config;
+exports.getModule = getModule;
 //# sourceMappingURL=index.js.map
