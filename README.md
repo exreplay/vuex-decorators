@@ -21,6 +21,18 @@ npm install @averjs/vuex-decorators
 yarn add @averjs/vuex-decorators
 ```
 
+If you want to use the [type safe](#type-safety) way you need to set the store in the config.
+
+```js
+// the file where you initialize your vuex store
+
+import { config } from '@averjs/vuex-decorators';
+import Vuex from 'vuex';
+
+const store = new Vuex.Store();
+config.store = store;
+```
+
 ### Babel
 
 In order for the Decorators and the classes to work, you need have a few babel plugins installed. Also keep in mind that if you want to use the `@HasGetterAndMutation`-Decorator for example, the babel plugins have to be >= 7.2.
@@ -110,12 +122,9 @@ export default class TestStore extends VuexModule {
 
     test = 'test';
 
-    // generates getter and mutation with name of variable
-    @HasGetterAndMutation testArray = [];
-
     // generates getter
     get getTest() {
-        return map(this.test, test => test = '');
+        return this.test;
     }
 
     // generates mutation
@@ -125,7 +134,7 @@ export default class TestStore extends VuexModule {
 
     // another way of defining a getter
     @Getter getterTest() {
-        return map(this.test, test => test = '');
+        return this.test;
     }
 
     // another way of defining a mutation
@@ -133,14 +142,15 @@ export default class TestStore extends VuexModule {
         this.test = payload;
     }
 
-    @Action async fetchTest() {
+    @Action async fetchTest({ data }) {
         try {
-            const { data } = await axios({
+            const { data: { test } } = await axios({
                 url: `test`,
-                method: 'GET'
+                method: 'GET',
+                data
             });
 
-            this.$store.commit('setTest', data.test);
+            this.$store.commit('setTest', test);
         } catch (err) {
             throw err;
         }
@@ -148,6 +158,60 @@ export default class TestStore extends VuexModule {
 }
 
 ```
+
+### Type safety
+
+When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create which can be access by passing the store through the `getModule` method. If we take the store we described above, you can do something like this:
+
+```vue
+<template>
+    <div>{{ test }}</div>
+</template>
+
+<script type="ts">
+    import { Vue, Component } from 'vue-property-decorator';
+    import { getModule } from '@averjs/vuex-decorators';
+    import TestStore from './TestStore';
+    import { getModule } from '@averjs/vuex-decorators';
+
+    const TestModule = getModule(TestStore);
+
+    @Component
+    export default class Test extends Vue {
+        get test() {
+            // old way
+            return this.$store.getters['test/getTest'];
+
+            // new way
+            return TestModule.test;
+            //  or
+            return TestModule.getterTest;
+        }
+
+        set test(val) {
+            // old way
+            this.$store.commit('test/setTest', val);
+
+            // new way
+            TestModule.test = val;
+            // or
+            TestModule.mutationTest(val);
+        }
+
+        async callAction() {
+            const data = new FormData();
+
+            // old way
+            await this.$store.dispatch('test/fetchTest', { data });
+
+            // new way
+            await TestModule.fetchTest({ data });
+        }
+    }
+</script>
+```
+
+This feature is not limited to Typescript. It can also be used with Babel. Even though it will not give you precise typings, your IDEs intellisense will still tell you what can be called inside your vuex module.
 
 ### Usage with Vuex
 ```js
@@ -163,11 +227,3 @@ new Vuex.Store({
     }
 });
 ```
-
-## ToDo
-
-- [ ] Create state, getter and mutation if there is a getter and setter named the same
-- [ ] Add `@Persisted`-Decorator for `vuex-persistedstate` plugin
-- [x] Better Typescript support
-- [x] Use `set` for Mutations
-- [x] Complete writing tests
