@@ -161,7 +161,7 @@ export default class TestStore extends VuexModule {
 
 ### Type safety
 
-When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create which can be access by passing the store through the `getModule` method. If we take the store we described above, you can do something like this:
+When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create which can be accessed by passing the store through the `getModule` method. If we take the store we described above, you can do something like this:
 
 ```vue
 <template>
@@ -170,7 +170,6 @@ When using the default way of accessing the vuex store, you never know eg. what 
 
 <script type="ts">
     import { Vue, Component } from 'vue-property-decorator';
-    import { getModule } from '@averjs/vuex-decorators';
     import TestStore from './TestStore';
     import { getModule } from '@averjs/vuex-decorators';
 
