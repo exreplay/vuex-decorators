@@ -1,4 +1,4 @@
-import { Module, GetterTree, MutationTree } from 'vuex';
+import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
 
 export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
@@ -8,6 +8,12 @@ export interface AverModule<S, R> extends Module<S, R> {
 interface Store<S, R> {
   [key: string]: AverModule<S, R>;
 }
+
+interface Config<S> {
+  store?: VuexStore<S>;
+}
+
+export const config: Config<any> = {};
 
 export const stores: Store<any, any> = {};
 
