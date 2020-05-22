@@ -38,7 +38,7 @@ export function assignStates<S>(Obj: any) {
    * We need to remove all props which have a moduleName and therefore are instances of a nested module.
    * If we dont do that, every nested prop would be also declared as state and vuex throws a warning.
    */
-  props = props.filter((prop) => !target[prop].moduleName);
+  props = props.filter((prop) => !target[prop]?.moduleName);
 
   stores[getClassName(target)].moduleName = target.moduleName;
   props.splice(props.indexOf('moduleName'), 1);
