@@ -27,7 +27,7 @@ export function generateStaticNestedProperties<S, R>(
     // tslint:disable-next-line: no-empty
     const nestedObject = function () {};
 
-    // We need to pass the full path to states because they are not namespace aware
+    // We need to pass the full path to states because they, no matter if namespace true or false, always need the full path.
     generateStaticStates(
       nestedModule,
       nestedPropertiesToDefine,
