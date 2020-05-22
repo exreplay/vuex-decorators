@@ -35,9 +35,11 @@ test('check if initializing store creates a valid vuex store object and state is
   initStore(TestModule);
   const obj = {
     namespaced: true,
+    nested: [],
     getters: {},
     actions: {},
     mutations: {},
+    modules: {},
   };
   expect(JSON.stringify(stores.testModule)).toEqual(JSON.stringify(obj));
   expect(stores.testModule.state()).toEqual({});
