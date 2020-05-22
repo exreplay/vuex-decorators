@@ -71,10 +71,17 @@ export function generateStaticNestedProperties<S, R>(
   return propertiesToDefine;
 }
 
+/**
+ * Generate static states for the root module
+ *
+ * @param store The current module which should be processed
+ * @param propertiesToDefine The object which gets defined on the constructor
+ * @param parentModuleName The path of the parent module
+ */
 export function generateStaticStates<S, R>(
   store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
-  parentModuleName?: string
+  parentModuleName: string = ''
 ): PropertiesToDefine {
   for (const state of Object.keys((store.state as () => S)())) {
     const statePath = constructPath(parentModuleName, store.moduleName, state);
@@ -91,10 +98,17 @@ export function generateStaticStates<S, R>(
   return propertiesToDefine;
 }
 
+/**
+ * Generate static getters for the root module
+ *
+ * @param store The current module which should be processed
+ * @param propertiesToDefine The object which gets defined on the constructor
+ * @param parentModuleName The path of the parent module
+ */
 export function generateStaticGetters<S, R>(
   store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
-  parentModuleName?: string
+  parentModuleName: string = ''
 ): PropertiesToDefine {
   for (const getter of Object.keys(store.getters as GetterTree<S, R>)) {
     propertiesToDefine[getter] = {
@@ -114,10 +128,17 @@ export function generateStaticGetters<S, R>(
   return propertiesToDefine;
 }
 
+/**
+ * Generate static mutations for the root module
+ *
+ * @param store The current module which should be processed
+ * @param propertiesToDefine The object which gets defined on the constructor
+ * @param parentModuleName The path of the parent module
+ */
 export function generateStaticMutations<S, R>(
   store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
-  parentModuleName?: string
+  parentModuleName: string = ''
 ): PropertiesToDefine {
   for (const mutation of Object.keys(store.mutations as MutationTree<S>)) {
     if (propertiesToDefine[mutation]) {
@@ -153,10 +174,17 @@ export function generateStaticMutations<S, R>(
   return propertiesToDefine;
 }
 
+/**
+ * Generate static actions for the root module
+ *
+ * @param store The current module which should be processed
+ * @param propertiesToDefine The object which gets defined on the constructor
+ * @param parentModuleName The path of the parent module
+ */
 export function generateStaticActions<S, R>(
   store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
-  parentModuleName?: string
+  parentModuleName: string = ''
 ): PropertiesToDefine {
   for (const action of Object.keys(store.actions as ActionTree<S, R>)) {
     propertiesToDefine[action] = {
@@ -187,7 +215,7 @@ export function getModule<S>(module: ConstructorOf<S>): S {
  * @param namespaced Make the path namespace aware
  */
 function constructPath(
-  parentModuleName: string | undefined,
+  parentModuleName: string = '',
   moduleName: string = '',
   propName: string,
   namespaced: boolean = true
