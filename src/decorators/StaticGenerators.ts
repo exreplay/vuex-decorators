@@ -218,7 +218,7 @@ export function getModule<S>(module: ConstructorOf<S>): S {
  * @param propName The name of the property eg. getter, mutation, ...
  * @param namespaced Make the path namespace aware
  */
-function constructPath(
+export function constructPath(
   parentModuleName: string = '',
   moduleName: string = '',
   propName: string,
