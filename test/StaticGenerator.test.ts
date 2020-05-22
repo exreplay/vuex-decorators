@@ -250,7 +250,7 @@ test('should generate static properties for nested modules', async () => {
   const testFunction = function () {};
   Object.defineProperties(testFunction, propertiesToDefine);
 
-  expect((propertiesToDefine as any).nestedModule.test).toBe('test');
+  expect((testFunction as any).nestedModule.test).toBe('test');
   expect(module.nestedModule.test).toBe('test');
 });
 
