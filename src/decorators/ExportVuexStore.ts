@@ -2,11 +2,10 @@ import { stores, getClassName, AverModule } from './utils';
 
 function nestStore(name: string) {
   const store = stores[name];
-  if (!store.modules) store.modules = {};
 
   for (const moduleName of store.nested || []) {
     const nestedModule = stores[moduleName];
-    store.modules[moduleName] = nestedModule;
+    store.modules![moduleName] = nestedModule;
     if (nestedModule.nested) nestStore(moduleName);
   }
 
