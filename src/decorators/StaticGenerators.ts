@@ -7,6 +7,14 @@ export interface PropertiesToDefine {
   [key: string]: PropertyDescriptor & ThisType<any>;
 }
 
+/**
+ * Generate static properties for nested modules
+ *
+ * @param store The current module which should be processed
+ * @param propertiesToDefine The object which gets defined on the constructor
+ * @param parentPath The path of the parent module to help construct nested paths
+ * @param fullPath The full path of the nesting
+ */
 export function generateStaticNestedProperties<S, R>(
   store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
@@ -18,6 +26,7 @@ export function generateStaticNestedProperties<S, R>(
     const nestedModule = stores[moduleName];
     const nestedObject = function () {};
 
+    // We need to pass the full path to states because they are not namespace aware
     generateStaticStates(nestedModule, nestedPropertiesToDefine, fullPath);
 
     generateStaticGetters(
@@ -68,13 +77,13 @@ export function generateStaticStates<S, R>(
   parentModuleName?: string
 ): PropertiesToDefine {
   for (const state of Object.keys((store.state as () => S)())) {
-    const statePath = constructPath(parentModuleName, store.moduleName, '');
+    const statePath = constructPath(parentModuleName, store.moduleName, state);
     propertiesToDefine[state] = {
       get() {
         let lastModule = config.store?.state;
         const paths = statePath.split('/');
         for (const path of paths || []) lastModule = lastModule[path];
-        return lastModule[state];
+        return lastModule;
       },
     };
   }
@@ -169,6 +178,14 @@ export function getModule<S>(module: ConstructorOf<S>): S {
   return module as any;
 }
 
+/**
+ * Construct the path for the current module
+ *
+ * @param parentModuleName The name of the parent module
+ * @param moduleName The name of the current module
+ * @param propName The name of the property eg. getter, mutation, ...
+ * @param namespaced Make the path namespace aware
+ */
 function constructPath(
   parentModuleName: string | undefined,
   moduleName: string = '',
