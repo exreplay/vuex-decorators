@@ -8,7 +8,7 @@ interface NestedModule {
 export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
-  nested?: NestedModule[];
+  nested: NestedModule[];
 }
 
 interface Store<S, R> {

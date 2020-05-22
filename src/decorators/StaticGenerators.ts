@@ -21,7 +21,7 @@ export function generateStaticNestedProperties<S, R>(
   parentPath?: string,
   fullPath?: string
 ): PropertiesToDefine {
-  for (const { prop, moduleName } of store.nested || []) {
+  for (const { prop, moduleName } of store.nested) {
     const nestedPropertiesToDefine = {};
     const nestedModule = stores[moduleName];
     // tslint:disable-next-line: no-empty
@@ -50,7 +50,7 @@ export function generateStaticNestedProperties<S, R>(
       parentPath || store.moduleName
     );
 
-    if (nestedModule.nested) {
+    if (nestedModule.nested.length > 0) {
       generateStaticNestedProperties(
         nestedModule,
         nestedPropertiesToDefine,

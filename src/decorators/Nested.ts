@@ -10,7 +10,7 @@ function Nested(value?: any) {
 
     if (!moduleName) return;
 
-    stores[getClassName(target)].nested!.push({
+    stores[getClassName(target)].nested.push({
       prop: key.toString(),
       moduleName,
     });
