@@ -186,3 +186,15 @@ test('set should mutate value and should be returned by getter', () => {
   const test = store.getters['testModule/getTest'];
   expect(test).toBe('newTest');
 });
+
+test('namespace should be set correctly when passed as option', () => {
+  @VuexClass({
+    namespaced: false,
+  })
+  class TestModule {
+    moduleName = 'testModule';
+  }
+
+  const tm = ExportVuexStore(TestModule);
+  expect(tm.namespaced).toBeFalsy();
+});
