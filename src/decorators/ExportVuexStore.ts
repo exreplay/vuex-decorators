@@ -1,10 +1,25 @@
 import { stores, getClassName, AverModule } from './utils';
 
+function nestStore(name: string) {
+  const store = stores[name];
+  if (!store.modules) store.modules = {};
+
+  for (const moduleName of store.nested || []) {
+    const nestedModule = stores[moduleName];
+    store.modules[moduleName] = nestedModule;
+    if (nestedModule.nested) nestStore(moduleName);
+  }
+
+  return store;
+}
+
 export default function ExportVuexStore<S, R, T>(
   target: T,
   exportAsReadyObject = false
 ): AverModule<S, R> | { [key: string]: AverModule<S, R> } {
   const name = getClassName(target);
-  if (!exportAsReadyObject) return stores[name];
-  else return { [name]: stores[name] };
+  const store = nestStore(name);
+
+  if (!exportAsReadyObject) return store;
+  else return { [name]: store };
 }
