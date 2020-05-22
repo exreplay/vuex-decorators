@@ -24,6 +24,7 @@ export function generateStaticNestedProperties<S, R>(
   for (const moduleName of store.nested || []) {
     const nestedPropertiesToDefine = {};
     const nestedModule = stores[moduleName];
+    // tslint:disable-next-line: no-empty
     const nestedObject = function () {};
 
     // We need to pass the full path to states because they are not namespace aware

@@ -246,6 +246,7 @@ test('should generate static properties for nested modules', async () => {
     })
   );
 
+  // tslint:disable-next-line: no-empty
   const testFunction = function () {};
   Object.defineProperties(testFunction, propertiesToDefine);
 
