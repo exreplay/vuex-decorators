@@ -27,7 +27,11 @@ export function generateStaticNestedProperties<S, R>(
     const nestedObject = function () {};
 
     // We need to pass the full path to states because they are not namespace aware
-    generateStaticStates(nestedModule, nestedPropertiesToDefine, fullPath);
+    generateStaticStates(
+      nestedModule,
+      nestedPropertiesToDefine,
+      fullPath || store.moduleName
+    );
 
     generateStaticGetters(
       nestedModule,
