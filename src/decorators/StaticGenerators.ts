@@ -165,9 +165,12 @@ export function generateStaticMutations<S, R>(
       propertiesToDefine[mutation] = {
         value: (val: any) => {
           config.store?.commit(
-            `${parentModuleName ? `${parentModuleName}/` : ''}${
-              store.moduleName
-            }/${mutation}`,
+            constructPath(
+              parentModuleName,
+              store.moduleName,
+              mutation,
+              store.namespaced
+            ),
             val
           );
         },
@@ -194,9 +197,12 @@ export function generateStaticActions<S, R>(
     propertiesToDefine[action] = {
       value: async (val: any) => {
         return config.store?.dispatch(
-          `${parentModuleName ? `${parentModuleName}/` : ''}${
-            store.moduleName
-          }/${action}`,
+          constructPath(
+            parentModuleName,
+            store.moduleName,
+            action,
+            store.namespaced
+          ),
           val
         );
       },
