@@ -24,7 +24,7 @@ function storeWrapper<S, R>(modules: { [key: string]: Module<S, R> }) {
 test('nesting should work correctly', async () => {
   @VuexClass
   class PleaseStop extends VuexModule {
-    private moduleName = 'pleaseStopModule';
+    private moduleName = 'pleaseStop';
     test = 'please stop nesting!';
   }
 
@@ -32,23 +32,23 @@ test('nesting should work correctly', async () => {
     namespaced: false,
   })
   class WowWhat {
-    private moduleName = 'wowWhatModule';
+    private moduleName = 'wowWhat';
     testWow = 'what the nesting!';
-    @Nested pleaseStopModule = new PleaseStop();
+    @Nested pleaseStop = new PleaseStop();
   }
 
   @VuexClass
   class FurtherNestedModule {
-    private moduleName = 'furtherNestedModule';
+    private moduleName = 'furtherNested';
     test = 'hello world from FurtherNestedModule!';
-    @Nested wowWhatModule = new WowWhat();
+    @Nested wowWhat = new WowWhat();
   }
 
   @VuexClass
   class NestedModule extends VuexModule {
     private moduleName = 'nestedModule';
     test = 'hello world from NestedModule!';
-    @Nested furtherNestedModule = new FurtherNestedModule();
+    @Nested furtherNested = new FurtherNestedModule();
   }
 
   @VuexClass
@@ -66,12 +66,12 @@ test('nesting should work correctly', async () => {
 
   const module = getModule(Test);
 
-  expect(
-    module.nestedModule.furtherNestedModule.wowWhatModule.pleaseStopModule.test
-  ).toBe('please stop nesting!');
+  expect(module.nestedModule.furtherNested.wowWhat.pleaseStop.test).toBe(
+    'please stop nesting!'
+  );
 
   // namespaced false should still return the correct state
-  expect(module.nestedModule.furtherNestedModule.wowWhatModule.testWow).toBe(
+  expect(module.nestedModule.furtherNested.wowWhat.testWow).toBe(
     'what the nesting!'
   );
 });
