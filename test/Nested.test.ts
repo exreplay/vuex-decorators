@@ -75,3 +75,51 @@ test('nesting should work correctly', async () => {
     'what the nesting!'
   );
 });
+
+test('nested decorator should also work with passed class as value', async () => {
+  @VuexClass
+  class NestedModule extends VuexModule {
+    private moduleName = 'nestedModule';
+    test = 'test';
+  }
+
+  @VuexClass
+  class Test {
+    private moduleName = 'test';
+    @Nested(NestedModule) nestedModule!: NestedModule;
+  }
+
+  const tm = ExportVuexStore(Test);
+  const store = storeWrapper({
+    [tm.moduleName as string]: tm,
+  });
+  config.store = store;
+
+  const module = getModule(Test);
+
+  expect(module.nestedModule.test).toBe('test');
+});
+
+test('nested call should be undefined when neither value nor a new instance is passed', async () => {
+  @VuexClass
+  class NestedModule extends VuexModule {
+    private moduleName = 'nestedModule';
+    test = 'test';
+  }
+
+  @VuexClass
+  class Test {
+    private moduleName = 'test';
+    @Nested() nestedModule!: NestedModule;
+  }
+
+  const tm = ExportVuexStore(Test);
+  const store = storeWrapper({
+    [tm.moduleName as string]: tm,
+  });
+  config.store = store;
+
+  const module = getModule(Test);
+
+  expect(module.nestedModule).toBeUndefined();
+});
