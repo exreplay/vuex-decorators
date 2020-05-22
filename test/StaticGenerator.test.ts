@@ -7,6 +7,7 @@ import {
   Action,
   VuexModule,
   Getter,
+  Nested,
 } from '../src';
 import { stores, config } from '../src/decorators/utils';
 import { createLocalVue, mount } from '@vue/test-utils';
@@ -17,6 +18,8 @@ import {
   generateStaticGetters,
   generateStaticMutations,
   generateStaticActions,
+  generateStaticNestedProperties,
+  constructPath,
 } from '../src/decorators/StaticGenerators';
 
 interface PayloadInterface {
@@ -25,8 +28,16 @@ interface PayloadInterface {
 }
 
 @VuexClass
+class NestedModule extends VuexModule {
+  private moduleName = 'nestedModule';
+  test = 'test';
+}
+
+@VuexClass
 class TestModule extends VuexModule {
   private moduleName = 'testModule';
+
+  @Nested nestedModule = new NestedModule();
 
   @HasGetterAndMutation public test = 'test';
 
@@ -224,4 +235,30 @@ test('should generate static actions correctly', async () => {
   expect(val).toBeTruthy();
   expect(store.getters['testModule/test']).toBe('world');
   expect(module.test).toBe('world');
+});
+
+test('should generate static properties for nested modules', async () => {
+  const propertiesToDefine: PropertiesToDefine = {};
+  generateStaticNestedProperties(stores.testModule, propertiesToDefine);
+  expect(JSON.stringify(propertiesToDefine)).toEqual(
+    JSON.stringify({
+      nestedModule: {},
+    })
+  );
+
+  expect(module.nestedModule.test).toBe('test');
+});
+
+test('path should be constructed correctly', () => {
+  let path = constructPath('parent', 'child', 'test', true);
+  expect(path).toBe('parent/child/test');
+
+  path = constructPath('parent', 'child', 'test', false);
+  expect(path).toBe('parent/test');
+
+  path = constructPath('parent', 'child', '', true);
+  expect(path).toBe('parent/child');
+
+  path = constructPath('parent', 'child', '', false);
+  expect(path).toBe('parent');
 });
