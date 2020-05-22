@@ -11,6 +11,7 @@ import {
 interface VuexClassOptions {
   persistent?: Array<string>;
   extend?: Array<any>;
+  namespaced?: boolean;
 }
 
 function generateVuexClass<S, R>(options: VuexClassOptions) {
@@ -36,6 +37,10 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
 
     if (options?.persistent) store.persistent = options.persistent;
     else store.persistent = false;
+
+    if (typeof options?.namespaced !== 'undefined') {
+      store.namespaced = options.namespaced;
+    }
 
     const propertiesToDefine = {};
 
