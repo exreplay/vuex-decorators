@@ -34,28 +34,28 @@ test('nesting should work correctly', async () => {
   class WowWhat {
     private moduleName = 'wowWhatModule';
     testWow = 'what the nesting!';
-    @Nested pleaseStop = new PleaseStop();
+    @Nested() pleaseStop = new PleaseStop();
   }
 
   @VuexClass
   class FurtherNestedModule {
     private moduleName = 'furtherNested';
     test = 'hello world from FurtherNestedModule!';
-    @Nested wowWhat = new WowWhat();
+    @Nested() wowWhat = new WowWhat();
   }
 
   @VuexClass
   class NestedModule extends VuexModule {
     private moduleName = 'nestedModule';
     test = 'hello world from NestedModule!';
-    @Nested furtherNested = new FurtherNestedModule();
+    @Nested() furtherNested = new FurtherNestedModule();
   }
 
   @VuexClass
   class Test {
     private moduleName = 'test';
     test = 'hello world from TestModule!';
-    @Nested nestedModule = new NestedModule();
+    @Nested() nestedModule = new NestedModule();
   }
 
   const tm = ExportVuexStore(Test);

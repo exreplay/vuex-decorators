@@ -37,7 +37,7 @@ class NestedModule extends VuexModule {
 class TestModule extends VuexModule {
   private moduleName = 'testModule';
 
-  @Nested nestedModule = new NestedModule();
+  @Nested() nestedModule = new NestedModule();
 
   @HasGetterAndMutation public test = 'test';
 
