@@ -32,7 +32,7 @@ test('nesting should work correctly', async () => {
     namespaced: false,
   })
   class WowWhat {
-    private moduleName = 'wowWhat';
+    private moduleName = 'wowWhatModule';
     testWow = 'what the nesting!';
     @Nested pleaseStop = new PleaseStop();
   }

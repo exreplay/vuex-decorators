@@ -3,7 +3,7 @@ import { stores, getClassName, AverModule } from './utils';
 function nestStore(name: string) {
   const store = stores[name];
 
-  for (const moduleName of store.nested || []) {
+  for (const { moduleName } of store.nested || []) {
     const nestedModule = stores[moduleName];
     store.modules![moduleName] = nestedModule;
     if (nestedModule.nested) nestStore(moduleName);

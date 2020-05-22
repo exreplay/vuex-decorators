@@ -1,9 +1,14 @@
 import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
 
+interface NestedModule {
+  prop: string;
+  moduleName: string;
+}
+
 export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
-  nested?: string[];
+  nested?: NestedModule[];
 }
 
 interface Store<S, R> {
