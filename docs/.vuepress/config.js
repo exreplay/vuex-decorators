@@ -22,6 +22,7 @@ module.exports = {
             '/decorators/vuex-class/',
             '/decorators/getter/',
             '/decorators/mutation/',
+            '/decorators/action/',
             '/decorators/has-getter/',
             '/decorators/has-getter-and-mutation/'
           ]
