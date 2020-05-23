@@ -1,6 +1,6 @@
 # Decorators
 
-To be able to transform a class into a valid vuex store object, we use decorators. The following decorators are defined:
+To be able to transform a class into a valid vuex store object, we use decorators. The following decorators are available:
 
 - [@VuexClass](/decorators/vuex-class)
 - [@Getter](/decorators/getter)
