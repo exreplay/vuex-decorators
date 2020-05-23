@@ -2,7 +2,7 @@
 
 The `@Getter` decorator can be used on a method, which gets transformed into a getter inside the exported vuex module. You can also use a standard getter method instead of the decorator.
 
-Internally the decorated method is called with a modified `this` context. All the states are mapped to the context and every argument is exposed through a `$store` object. You can find all the arguments which are passed in the official vuex getters documentation https://vuex.vuejs.org/api/#getters.
+Internally the decorated method is called with a modified `this` context. All the states are mapped to the context and every argument is exposed through a `$store` object. You can find all the arguments which are passed in the official vuex getters documentation [https://vuex.vuejs.org/api/#getters](https://vuex.vuejs.org/api/#getters).
 
 ```typescript
 import { VuexClass, VuexModule, Getter } from '@averjs/vuex-decorators';
