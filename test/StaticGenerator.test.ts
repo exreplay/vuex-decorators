@@ -308,4 +308,7 @@ test('path should be constructed correctly', () => {
 
   path = constructPath('parent', 'child', '', false);
   expect(path).toBe('parent');
+
+  path = constructPath();
+  expect(path).toBe('');
 });

@@ -232,7 +232,7 @@ export function getModule<S>(module: ConstructorOf<S>): S {
 export function constructPath(
   parentModuleName: string = '',
   moduleName: string = '',
-  propName: string,
+  propName: string = '',
   namespaced: boolean = true
 ) {
   let path = '';
