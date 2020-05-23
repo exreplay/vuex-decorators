@@ -25,6 +25,12 @@ module.exports = {
             '/decorators/has-getter/',
             '/decorators/has-getter-and-mutation/'
           ]
+        },
+        {
+          title: 'Type Safety',
+          path: '/type-safety/',
+          collapsable: false,
+          sidebarDepth: 0
         }
       ]
     }
