@@ -65,7 +65,7 @@ new Vuex.Store({
 });
 ```
 
-Now you are able to work with your module in 2 ways. The traditional way by calling `this.$store` or you can also make use of a type safe way like shown below. You can read more about it in the [...]() section.
+Now you are able to work with your module in 2 ways. The traditional way by calling `this.$store` or you can also make use of a type safe way like shown below. You can read more about it in the [Type Safety](/type-safety/) section.
 
 ```vue
 <template>
