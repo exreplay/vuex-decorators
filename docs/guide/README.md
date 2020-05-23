@@ -53,16 +53,19 @@ Now in order for Vuex to understand what happens in the class you exported, we n
 
 ```js
 import Vuex from 'vuex';
-import { ExportVuexStore } from '@averjs/vuex-decorators';
+import { config, ExportVuexStore } from '@averjs/vuex-decorators';
 import TestStore from './TestStore.js';
 
 const test = ExportVuexStore(TestStore);
 
-new Vuex.Store({
+const store = new Vuex.Store({
     modules: {
         [test.moduleName]: test
     }
 });
+
+// Set the created store instance in the config if you want to use the type safe way.
+config.store = store;
 ```
 
 Now you are able to work with your module in 2 ways. The traditional way by calling `this.$store` or you can also make use of a type safe way like shown below. You can read more about it in the [Type Safety](/type-safety/) section.
