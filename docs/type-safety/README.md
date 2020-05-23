@@ -1,6 +1,8 @@
 # Type Safety
 
-When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create which can be accessed by passing the store through the `getModule` method. If we take the store we describe below, you can do something like this.
+When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create which can be accessed by passing the store through the `getModule` method.
+
+First we need a basic vuex module.
 
 ```typescript
 import { VuexClass, VuexModule, Action, HasGetterAndMutation } from '@averjs/vuex-decorators';
@@ -24,6 +26,8 @@ export default class TestStore extends VuexModule {
 }
 
 ```
+
+What happens internally is that the `@VuexClass` decorator modifies the class by defining all the decorated properties and methods as static properties. For example the `fetchSomething` action is assigned as a static `fetchSomething` method which calls `config.store.dispatch('test/fetchSomething')` and returns a promise. We can now use our module like this.
 
 ```vue
 <template>
