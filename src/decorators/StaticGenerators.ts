@@ -92,9 +92,13 @@ export function generateStaticStates<S, R>(
     const statePath = constructPath(parentModuleName, store.moduleName, state);
     propertiesToDefine[state] = {
       get() {
-        let lastModule = config.store?.state;
+        let store = null;
+        if (!config.store) return;
+        else store = config.store;
+
+        let lastModule = store.state;
         const paths = statePath.split('/');
-        for (const path of paths || []) lastModule = lastModule[path];
+        for (const path of paths) lastModule = lastModule[path];
         return lastModule;
       },
     };
