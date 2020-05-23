@@ -7,6 +7,8 @@
     <a href="https://codecov.io/gh/exreplay/vuex-decorators"><img src="https://codecov.io/gh/exreplay/averjs-vuex-decorators/branch/development/graph/badge.svg" alt="Codecov"></a>
 </p>
 
+Class based vuex modules
+
 ## Documentation
 
 Check out our docs at https://vuex-decorators.netlify.app/.
