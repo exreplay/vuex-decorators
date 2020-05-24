@@ -50,7 +50,7 @@ this is turned into the equivalent
 }
 ```
 
-The reason why you have to pass a new instance of the nested module is for typings to work correctly. By doing that, your IDEs intellisense would give you the correct properties which can be called. This is how you would access your nested modules.
+The reason why you have to pass a new instance of the nested module is for typings to work correctly. By doing that, your IDEs intellisense will give you the correct properties and methods which can be called. This is how you would access your nested modules.
 
 ```vue
 <template>
