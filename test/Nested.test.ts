@@ -59,6 +59,7 @@ test('nesting should work correctly', async () => {
   }
 
   const tm = ExportVuexStore(Test);
+  console.log(tm);
   const store = storeWrapper({
     [tm.moduleName as string]: tm,
   });
