@@ -64,11 +64,10 @@ const store = new Vuex.Store({
     }
 });
 
-// Set the created store instance in the config if you want to use the type safe way.
 config.store = store;
 ```
 
-Now you are able to work with your module in 2 ways. The traditional way by calling `this.$store` or you can also make use of a type safe way like shown below. You can read more about it in the [Type Safety](/type-safety/) section.
+Now you are able to work with your module in 2 ways. The traditional way by calling `this.$store` or you can also make use of a type safe way like shown below. Dont forget to pass the final store object to the config like described [here](/api/config/#store). You can read more about it in the [Type Safety](/type-safety/) section.
 
 ```vue
 <template>

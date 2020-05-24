@@ -14,6 +14,16 @@ module.exports = {
         '/',
         '/guide/',
         {
+          title: 'API',
+          collapsable: false,
+          sidebarDepth: 0,
+          children: [
+            '/api/vuex-module/',
+            '/api/export-vuex-store/',
+            '/api/config/'
+          ]
+        },
+        {
           title: 'Decorators',
           path: '/decorators/',
           collapsable: false,
