@@ -6,6 +6,7 @@ import {
   generateStaticGetters,
   generateStaticMutations,
   generateStaticActions,
+  generateStaticNestedProperties,
 } from './StaticGenerators';
 
 interface VuexClassOptions {
@@ -44,6 +45,7 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
 
     const propertiesToDefine = {};
 
+    generateStaticNestedProperties(store, propertiesToDefine);
     generateStaticStates(store, propertiesToDefine);
     generateStaticGetters(store, propertiesToDefine);
     generateStaticMutations(store, propertiesToDefine);

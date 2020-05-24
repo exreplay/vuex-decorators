@@ -1,17 +1,20 @@
 import { VuexClass, ExportVuexStore } from '../src';
+import { AverModule } from '../src/decorators/utils';
 
 @VuexClass
 class TestModule {
   moduleName = 'testModule';
 }
 
-test('check if object is a valid vuex object', () => {
+test('check if object is a valid vuex object', <S = any, R = any>() => {
   const tm = ExportVuexStore(TestModule);
-  const obj = {
+  const obj: AverModule<S, R> = {
     namespaced: true,
+    nested: [],
     getters: {},
     actions: {},
     mutations: {},
+    modules: {},
     moduleName: 'testModule',
     persistent: false,
   };

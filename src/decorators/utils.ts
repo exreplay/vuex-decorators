@@ -1,8 +1,14 @@
 import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
 
+interface NestedModule {
+  prop: string;
+  moduleName: string;
+}
+
 export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
+  nested: NestedModule[];
 }
 
 interface Store<S, R> {
@@ -19,7 +25,7 @@ export const stores: Store<any, any> = {};
 
 export function assignStates<S>(Obj: any) {
   const target = new Obj();
-  const props = Object.getOwnPropertyNames(target);
+  let props = Object.getOwnPropertyNames(target);
   if (typeof target.moduleName === 'undefined') {
     console.error(
       `You need to define the 'moduleName' class variable inside '${target.constructor.name}'! Otherwise it won't be added to the Vuex Store!`
@@ -27,6 +33,12 @@ export function assignStates<S>(Obj: any) {
   }
 
   initStore(target);
+
+  /**
+   * We need to remove all props which have a moduleName and therefore are instances of a nested module.
+   * If we dont do that, every nested prop would be also declared as state and vuex throws a warning.
+   */
+  props = props.filter((prop) => !target[prop]?.moduleName);
 
   stores[getClassName(target)].moduleName = target.moduleName;
   props.splice(props.indexOf('moduleName'), 1);
@@ -88,9 +100,11 @@ export function initStore<T>(target: T): void {
       state: () => {
         return {};
       },
+      nested: [],
       getters: {},
       actions: {},
       mutations: {},
+      modules: {},
     };
   }
 }

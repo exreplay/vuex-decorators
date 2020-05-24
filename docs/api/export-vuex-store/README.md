@@ -1,6 +1,6 @@
 # ExportVuexStore
 
-Every class you decorate with `@VuexClass` is saved internally inside a `stores` object. So if you want the access the store you created just pass the class to the `ExportVuexStore` method, which returns the final object ready to be passed to vuex.
+Every class you decorate with `@VuexClass` is saved internally inside a `stores` object. So if you want to access the store you created just pass the class to the `ExportVuexStore` method, which returns the final object, even with all the nested modules, ready to be passed to vuex. 
 
 ```typescript
 // ./TestStore.js
@@ -28,6 +28,7 @@ this would produce
 {
   namespaced: true,
   moduleName: 'test',
+  nested: [],
   state: () => {
     return {
       test: 'test'
@@ -36,6 +37,7 @@ this would produce
   getters: {},
   actions: {},
   mutations: {},
+  modules: {},
   persistent: false
 }
 ```
@@ -49,6 +51,7 @@ ExportVuexStore(TestStore, true);
   test: {
     namespaced: true,
     moduleName: 'test',
+    nested: [],
     state: () => {
       return {
         test: 'test'
@@ -57,6 +60,7 @@ ExportVuexStore(TestStore, true);
     getters: {},
     actions: {},
     mutations: {},
+    modules: {},
     persistent: false
   }
 }
