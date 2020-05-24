@@ -19,7 +19,8 @@ module.exports = {
           sidebarDepth: 0,
           children: [
             '/api/vuex-module/',
-            '/api/export-vuex-store/'
+            '/api/export-vuex-store/',
+            '/api/config/'
           ]
         },
         {
