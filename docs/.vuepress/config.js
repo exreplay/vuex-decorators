@@ -34,7 +34,8 @@ module.exports = {
             '/decorators/mutation/',
             '/decorators/action/',
             '/decorators/has-getter/',
-            '/decorators/has-getter-and-mutation/'
+            '/decorators/has-getter-and-mutation/',
+            '/decorators/nested/'
           ]
         },
         {
