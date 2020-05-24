@@ -6,6 +6,13 @@ Writing a vuex store can become confusing very fast. When a project gets bigger 
 
 Thanks to Decorators in Typescript and Babel, we are able to transform the boring old way of writing Vuex into something way better, type safe and more maintainable.
 
+## Features
+
+- Class based vuex modules
+- Works with Babel and Typescript
+- Type-safe way of accessing the store with static class properties
+- Nested modules with namespace awareness (There is no limit 👌)
+
 ## Transpiler Setup
 
 Before we can start writing our class based vuex stores we need to setup our transpiler in order for them to understand what we want.
