@@ -18,7 +18,8 @@ module.exports = {
           collapsable: false,
           sidebarDepth: 0,
           children: [
-            '/api/vuex-module/'
+            '/api/vuex-module/',
+            '/api/export-vuex-store/'
           ]
         },
         {
