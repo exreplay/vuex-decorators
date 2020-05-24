@@ -28,6 +28,7 @@ this would produce
 {
   namespaced: true,
   moduleName: 'test',
+  nested: [],
   state: () => {
     return {
       test: 'test'
@@ -50,6 +51,7 @@ ExportVuexStore(TestStore, true);
   test: {
     namespaced: true,
     moduleName: 'test',
+    nested: [],
     state: () => {
       return {
         test: 'test'
