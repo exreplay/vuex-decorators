@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/exreplay/vuex-decorators/compare/v3.1.0...v3.2.0) (2020-05-24)
+
+
+### Features
+
+* added decorator for nested modules ([#7](https://github.com/exreplay/vuex-decorators/issues/7)) ([df0a19b](https://github.com/exreplay/vuex-decorators/commit/df0a19b093c1a72d4332bd538b7f0b71e4349b1f))
+* added namespaced option to class decorator ([#8](https://github.com/exreplay/vuex-decorators/issues/8)) ([80947fe](https://github.com/exreplay/vuex-decorators/commit/80947fefc2ac30f552fc93a6320d6a05455934b5))
+
 ## [3.1.0](https://github.com/exreplay/vuex-decorators/compare/v3.0.0...v3.1.0) (2020-05-20)
 
 
