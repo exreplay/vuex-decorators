@@ -1,7 +1,16 @@
 import { stores, getClassName, AverModule } from './utils';
 
+function mapGetterFns<S, R>(store: AverModule<S, R>) {
+  store.getters = {
+    ...store.getters,
+    ...store._getterFns,
+  };
+}
+
 function nestStore(name: string) {
-  const store = stores[name];
+  const store = { ...stores[name] };
+
+  mapGetterFns(store);
 
   for (const { moduleName } of store.nested) {
     const nestedModule = stores[moduleName];
