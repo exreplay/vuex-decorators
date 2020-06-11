@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { VuexClass, ExportVuexStore } from '../src';
-import { stores } from '../src/decorators/utils';
+import { stores, config } from '../src/decorators/utils';
 
 Vue.use(Vuex);
 
@@ -130,6 +130,7 @@ test('getter should return value from test variable', () => {
       [tm.moduleName as string]: tm,
     },
   });
+  config.store = store;
 
   const test = store.getters['testModule/getTest'];
   expect(test).toBe('test');
@@ -182,6 +183,8 @@ test('set should mutate value and should be returned by getter', () => {
       [tm.moduleName as string]: tm,
     },
   });
+  config.store = store;
+
   store.commit('testModule/setTest', 'newTest');
   const test = store.getters['testModule/getTest'];
   expect(test).toBe('newTest');

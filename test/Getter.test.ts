@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { VuexClass, ExportVuexStore, Getter } from '../src';
+import { VuexClass, ExportVuexStore, Getter, config } from '../src';
 
 Vue.use(Vuex);
 
@@ -20,6 +20,8 @@ const store = new Vuex.Store({
     [tm.moduleName as string]: tm,
   },
 });
+
+config.store = store;
 
 test('check if getter exists and is a function', () => {
   expect(tm.getters).toEqual({ getTest: expect.any(Function) });
