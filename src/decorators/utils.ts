@@ -9,6 +9,7 @@ export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
   nested: NestedModule[];
+  _getterFns?: GetterTree<S, R>;
 }
 
 interface Store<S, R> {
@@ -61,15 +62,8 @@ export function assignStates<S>(Obj: any) {
         rootState: any,
         rootGetters: GetterTree<any, any>
       ) => {
-        const thisObject = {
-          $store: { state, getters, rootState, rootGetters },
-        };
-        for (const key of Object.keys(state)) {
-          Object.defineProperty(thisObject, key, {
-            get: () => (state as any)[key],
-          });
-        }
-        const output = (descriptor.get as Function).call(thisObject);
+        Obj.$store = { state, getters, rootState, rootGetters };
+        const output = (descriptor.get as Function).call(Obj._staticGetters);
         return output;
       };
     }
