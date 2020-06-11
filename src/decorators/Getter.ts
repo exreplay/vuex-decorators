@@ -7,17 +7,19 @@ export default function Getter<T, R>(
   descriptor: TypedPropertyDescriptor<(...args: any[]) => R>
 ) {
   initStore(target);
-  stores[getClassName(target)].getters![key as string] = <S, R>(
+  const store = stores[getClassName(target)];
+
+  if (!store._getterFns) store._getterFns = {};
+
+  store._getterFns[key as string] = <S, R>(
     state: S,
     getters: any,
     rootState: R,
     rootGetters: any
   ) => {
-    const thisObject = { $store: { state, getters, rootState, rootGetters } };
-    for (const key of Object.keys(state)) {
-      Object.assign(thisObject, { [key]: (state as any)[key] });
-    }
-    const output = (target as any)[key].call(thisObject);
+    const targetModule = (target as any).constructor;
+    targetModule.$store = { state, getters, rootState, rootGetters };
+    const output = (target as any)[key].call(targetModule._staticGetters);
     return output;
   };
 }
