@@ -115,7 +115,7 @@ function wrapperFactory<S>(store: Store<S>) {
           return module.testCharCount;
         },
         testCharCountTimes2() {
-          return module.testCharCountTimes2;
+          return module.testCharCountTimes2();
         },
       },
     },
@@ -148,16 +148,16 @@ test('should generate static states correctly', () => {
   storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticStates(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      testState: {
-        get() {},
-      },
-      test: {
-        get() {},
-      },
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    testState: {
+      get: expect.any(Function),
+      set: expect.any(Function),
+    },
+    test: {
+      get: expect.any(Function),
+      set: expect.any(Function),
+    },
+  });
 
   expect(propertiesToDefine.test.get!()).toBe('test');
   expect(module.test).toBe('test');
@@ -167,29 +167,27 @@ test('should generate static getters correctly', () => {
   storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticGetters(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      test: {
-        get() {},
-      },
-      testCharCountTimes2: {
-        get() {},
-      },
-      getSetTest: {
-        get() {},
-      },
-      testCharCount: {
-        get() {},
-      },
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    testCharCountTimes2: {
+      get: expect.any(Function),
+    },
+    test: {
+      get: expect.any(Function),
+    },
+    getSetTest: {
+      get: expect.any(Function),
+    },
+    testCharCount: {
+      get: expect.any(Function),
+    },
+  });
 
   expect(propertiesToDefine.test.get!()).toBe('test');
   expect(module.test).toBe('test');
   expect(propertiesToDefine.testCharCount.get!()).toBe(4);
   expect(module.testCharCount).toBe(4);
-  expect(propertiesToDefine.testCharCountTimes2.get!()).toBe(8);
-  expect(module.testCharCountTimes2).toBe(8);
+  expect(propertiesToDefine.testCharCountTimes2.get!()()).toBe(8);
+  expect(module.testCharCountTimes2()).toBe(8);
 });
 
 test('should generate static mutations correctly', () => {
@@ -197,19 +195,17 @@ test('should generate static mutations correctly', () => {
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticMutations(stores.testModule, propertiesToDefine);
 
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      test: {
-        set() {},
-      },
-      setTest: {
-        value() {},
-      },
-      getSetTest: {
-        set() {},
-      },
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    test: {
+      value: expect.any(Function),
+    },
+    setTest: {
+      value: expect.any(Function),
+    },
+    getSetTest: {
+      value: expect.any(Function),
+    },
+  });
 
   propertiesToDefine.test.value!('test2');
   expect(store.getters['testModule/test']).toBe('test2');
@@ -236,13 +232,11 @@ test('should generate static actions correctly', async () => {
   const store = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticActions(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      fetchTest: {
-        value() {},
-      },
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    fetchTest: {
+      value: expect.any(Function),
+    },
+  });
 
   let val = await propertiesToDefine.fetchTest.value({ test1: 'hello' });
   expect(val).toBeTruthy();
@@ -259,11 +253,11 @@ test('should generate static properties for nested modules', async () => {
   storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticNestedProperties(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      nestedModule: {},
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    nestedModule: {
+      get: expect.any(Function),
+    },
+  });
 
   // tslint:disable-next-line: no-empty
   const testFunction = function () {};
