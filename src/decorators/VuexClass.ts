@@ -19,14 +19,12 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
   return <TFunction extends Function>(
     constructor: TFunction
   ): TFunction | void => {
-    const target: Function & VuexClassOptions = constructor;
+    assignStates(constructor);
 
-    assignStates(target);
-
-    const store = stores[getClassName(target)];
+    const store = stores[getClassName(constructor)];
 
     for (const obj of options?.extend || []) {
-      const extendStore = ExportVuexStore<any, any, typeof target>(obj);
+      const extendStore = ExportVuexStore<any, any, typeof constructor>(obj);
       const oldState = store.state();
       const newState = extendStore.state();
       const stateFactory = () => Object.assign(oldState, newState);
@@ -45,12 +43,28 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
 
     const propertiesToDefine = {};
 
-    generateStaticNestedProperties(store, propertiesToDefine);
     generateStaticStates(store, propertiesToDefine);
     generateStaticGetters(store, propertiesToDefine);
+
+    const getters = { ...propertiesToDefine };
+
+    generateStaticNestedProperties(store, propertiesToDefine);
     generateStaticMutations(store, propertiesToDefine);
     generateStaticActions(store, propertiesToDefine);
 
+    /**
+     * Assign the cloned propertiesToDefine object from above to a _staticGetters property.
+     * This is needed later for binding the `this` context of getters to only the getters and states.
+     * We could also bind all properties but this is not how vuex should be used in a non class based way.
+     *
+     * This is also way more performant than extracting the getters from the properties and defining them again
+     * everytime a getter is called. By doing it this way we just pass the _staticGetters property to the
+     * `this` context and that is it.
+     */
+    Object.defineProperty(constructor, '_staticGetters', {
+      value: Object.defineProperties({}, getters),
+    });
+    Object.defineProperty(constructor, '$store', { writable: true });
     Object.defineProperties(constructor, propertiesToDefine);
 
     return constructor;
