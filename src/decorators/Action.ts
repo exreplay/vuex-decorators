@@ -12,11 +12,9 @@ export default function Action<T, R>(
     context: ActionContext<any, any>,
     payload: any
   ) {
-    const thisObject = { $store: context };
-    for (const key of Object.keys(context.state)) {
-      Object.assign(thisObject, { [key]: context.state[key] });
-    }
-    return (target as any)[key].call(thisObject, payload);
+    const targetModule = (target as any).constructor;
+    targetModule.$store = context;
+    return (target as any)[key].call(targetModule, payload);
   };
 
   stores[getClassName(target)].actions![key as string] = action;
