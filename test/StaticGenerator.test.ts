@@ -27,12 +27,12 @@ interface PayloadInterface {
   test2?: string[];
 }
 
-let module: any;
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
+  config.store = undefined;
 });
 
 function storeFactory(setStoreToConfig = true) {
@@ -46,7 +46,7 @@ function storeFactory(setStoreToConfig = true) {
   class TestModule extends VuexModule {
     private moduleName = 'testModule';
 
-    @Nested() nestedModule = new NestedModule();
+    @Nested(NestedModule) nestedModule = new NestedModule();
 
     testState = 'test';
 
@@ -97,12 +97,12 @@ function storeFactory(setStoreToConfig = true) {
   if (setStoreToConfig) config.store = store;
   else config.store = undefined;
 
-  module = getModule(TestModule);
+  const module = getModule(TestModule);
 
-  return store;
+  return { store, module };
 }
 
-function wrapperFactory<S>(store: Store<S>) {
+function wrapperFactory<S>(store: Store<S>, module: any) {
   return mount(
     {
       template:
@@ -127,8 +127,8 @@ function wrapperFactory<S>(store: Store<S>) {
 }
 
 test('generated properties should be reactive', async () => {
-  const store = storeFactory();
-  const component = wrapperFactory(store);
+  const { store, module } = storeFactory();
+  const component = wrapperFactory(store, module);
   expect(component.text()).toBe('4 8 test');
 
   await module.fetchTest({ test1: 'hello' });
@@ -145,7 +145,7 @@ test('generated properties should be reactive', async () => {
 });
 
 test('should generate static states correctly', () => {
-  storeFactory();
+  const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticStates(stores.testModule, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
@@ -164,7 +164,7 @@ test('should generate static states correctly', () => {
 });
 
 test('should generate static getters correctly', () => {
-  storeFactory();
+  const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticGetters(stores.testModule, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
@@ -191,7 +191,7 @@ test('should generate static getters correctly', () => {
 });
 
 test('should generate static mutations correctly', () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticMutations(stores.testModule, propertiesToDefine);
 
@@ -217,7 +217,7 @@ test('should generate static mutations correctly', () => {
 });
 
 test('should generate get and set for properties with HasGetterAndMutation', () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticGetters(stores.testModule, propertiesToDefine);
   generateStaticMutations(stores.testModule, propertiesToDefine);
@@ -229,7 +229,7 @@ test('should generate get and set for properties with HasGetterAndMutation', () 
 });
 
 test('should generate static actions correctly', async () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticActions(stores.testModule, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
@@ -250,7 +250,18 @@ test('should generate static actions correctly', async () => {
 });
 
 test('should generate static properties for nested modules', async () => {
-  storeFactory();
+  @VuexClass
+  class NestedModule extends VuexModule {
+    private moduleName = 'nestedModule';
+    test = 'test';
+  }
+
+  @VuexClass
+  class TestModule extends VuexModule {
+    private moduleName = 'testModule';
+    @Nested(NestedModule) nestedModule = new NestedModule();
+  }
+
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticNestedProperties(stores.testModule, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
@@ -258,17 +269,15 @@ test('should generate static properties for nested modules', async () => {
       get: expect.any(Function),
     },
   });
+});
 
-  // tslint:disable-next-line: no-empty
-  const testFunction = function () {};
-  Object.defineProperties(testFunction, propertiesToDefine);
-
-  expect((testFunction as any).nestedModule.test).toBe('test');
+test('calls on nested module should work correctly', () => {
+  const { module } = storeFactory();
   expect(module.nestedModule.test).toBe('test');
 });
 
 test('should guard static props when store is not passed to config', async () => {
-  storeFactory(false);
+  const { module } = storeFactory(false);
   const propertiesToDefine: PropertiesToDefine = {};
   generateStaticStates(stores.testModule, propertiesToDefine);
   generateStaticGetters(stores.testModule, propertiesToDefine);
