@@ -1,4 +1,5 @@
 import { config, AverModule, stores } from './utils';
+import { GetterTree, MutationTree, ActionTree } from 'vuex';
 
 export type ConstructorOf<C> = { new (...args: any[]): C };
 
@@ -20,8 +21,6 @@ export function generateStaticNestedProperties<S, R, N>(
   parentPath?: string,
   fullPath?: string
 ): PropertiesToDefine {
-  if (!store.nested) return propertiesToDefine;
-
   for (const { prop, moduleName, module } of store.nested) {
     const nestedPropertiesToDefine = {};
     const nestedModule = stores[moduleName];
@@ -91,8 +90,6 @@ export function generateStaticStates<S, R, N>(
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
-  if (!store.state) return propertiesToDefine;
-
   for (const state of Object.keys((store.state as () => S)())) {
     const statePath = constructPath(parentModuleName, store.moduleName, state);
     propertiesToDefine[state] = {
@@ -131,7 +128,8 @@ export function generateStaticGetters<S, R, N>(
     for (const getter of Object.keys(store._getterFns)) {
       propertiesToDefine[getter] = {
         get: () => () => {
-          return config.store?.getters[
+          if (!config.store) return;
+          return config.store.getters[
             constructPath(
               parentModuleName,
               store.moduleName,
@@ -144,21 +142,20 @@ export function generateStaticGetters<S, R, N>(
     }
   }
 
-  if (store.getters) {
-    for (const getter of Object.keys(store.getters)) {
-      propertiesToDefine[getter] = {
-        get() {
-          return config.store?.getters[
-            constructPath(
-              parentModuleName,
-              store.moduleName,
-              getter,
-              store.namespaced
-            )
-          ];
-        },
-      };
-    }
+  for (const getter of Object.keys(store.getters as GetterTree<S, R>)) {
+    propertiesToDefine[getter] = {
+      get() {
+        if (!config.store) return;
+        return config.store.getters[
+          constructPath(
+            parentModuleName,
+            store.moduleName,
+            getter,
+            store.namespaced
+          )
+        ];
+      },
+    };
   }
 
   return propertiesToDefine;
@@ -176,15 +173,14 @@ export function generateStaticMutations<S, R, N>(
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
-  if (!store.mutations) return propertiesToDefine;
-
-  for (const mutation of Object.keys(store.mutations)) {
+  for (const mutation of Object.keys(store.mutations as MutationTree<S>)) {
     if (propertiesToDefine[mutation]) {
       const temp = propertiesToDefine[mutation];
       propertiesToDefine[mutation] = {
         ...temp,
         set: (val: any) => {
-          config.store?.commit(
+          if (!config.store) return;
+          config.store.commit(
             constructPath(
               parentModuleName,
               store.moduleName,
@@ -198,7 +194,8 @@ export function generateStaticMutations<S, R, N>(
     } else {
       propertiesToDefine[mutation] = {
         value: (val: any) => {
-          config.store?.commit(
+          if (!config.store) return;
+          config.store.commit(
             constructPath(
               parentModuleName,
               store.moduleName,
@@ -227,12 +224,11 @@ export function generateStaticActions<S, R, N>(
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
-  if (!store.actions) return propertiesToDefine;
-
-  for (const action of Object.keys(store.actions)) {
+  for (const action of Object.keys(store.actions as ActionTree<S, R>)) {
     propertiesToDefine[action] = {
       value: async (val: any) => {
-        return config.store?.dispatch(
+        if (!config.store) return;
+        return config.store.dispatch(
           constructPath(
             parentModuleName,
             store.moduleName,
