@@ -13,6 +13,7 @@ function Nested(value?: any) {
     stores[getClassName(target)].nested.push({
       prop: key.toString(),
       moduleName,
+      module: value || targetObj[key].constructor,
     });
   };
 }

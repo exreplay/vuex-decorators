@@ -1,19 +1,20 @@
 import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
 
-interface NestedModule {
+interface NestedModule<N> {
   prop: string;
   moduleName: string;
+  module: N;
 }
 
-export interface AverModule<S, R> extends Module<S, R> {
+export interface AverModule<S, R, N> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
-  nested: NestedModule[];
+  nested: NestedModule<N>[];
   _getterFns?: GetterTree<S, R>;
 }
 
-interface Store<S, R> {
-  [key: string]: AverModule<S, R>;
+interface Store<S, R, N> {
+  [key: string]: AverModule<S, R, N>;
 }
 
 interface Config<S> {
@@ -22,7 +23,7 @@ interface Config<S> {
 
 export const config: Config<any> = {};
 
-export const stores: Store<any, any> = {};
+export const stores: Store<any, any, any> = {};
 
 export function assignStates<S>(Obj: any) {
   const target = new Obj();
