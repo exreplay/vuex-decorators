@@ -24,7 +24,9 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
     const store = stores[getClassName(constructor)];
 
     for (const obj of options?.extend || []) {
-      const extendStore = ExportVuexStore<any, any, typeof constructor>(obj);
+      const extendStore = ExportVuexStore<any, any, typeof constructor, any>(
+        obj
+      );
       const oldState = store.state();
       const newState = extendStore.state();
       const stateFactory = () => Object.assign(oldState, newState);
@@ -41,31 +43,49 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
       store.namespaced = options.namespaced;
     }
 
-    const propertiesToDefine = {};
-
-    generateStaticStates(store, propertiesToDefine);
-    generateStaticGetters(store, propertiesToDefine);
-
-    const getters = { ...propertiesToDefine };
-
-    generateStaticNestedProperties(store, propertiesToDefine);
-    generateStaticMutations(store, propertiesToDefine);
-    generateStaticActions(store, propertiesToDefine);
-
     /**
-     * Assign the cloned propertiesToDefine object from above to a _staticGetters property.
-     * This is needed later for binding the `this` context of getters to only the getters and states.
-     * We could also bind all properties but this is not how vuex should be used in a non class based way.
-     *
-     * This is also way more performant than extracting the getters from the properties and defining them again
-     * everytime a getter is called. By doing it this way we just pass the _staticGetters property to the
-     * `this` context and that is it.
+     * Define a method which generates all the static properties. This is necessary because
+     * otherwise all the properties for nested modules would be generated which should be done
+     * by the parent module to have the right module path.
      */
-    Object.defineProperty(constructor, '_staticGetters', {
-      value: Object.defineProperties({}, getters),
+    Object.defineProperty(constructor, '_genStatic', {
+      value: () => {
+        const nestedPropertiesToDefine = {};
+        const propertiesToDefine = {};
+
+        generateStaticNestedProperties(store, nestedPropertiesToDefine);
+        generateStaticStates(store, propertiesToDefine);
+        generateStaticGetters(store, propertiesToDefine);
+
+        const getters = { ...propertiesToDefine };
+
+        generateStaticMutations(store, propertiesToDefine);
+        generateStaticActions(store, propertiesToDefine);
+
+        /**
+         * Assign the cloned propertiesToDefine object from above to a _staticGetters property.
+         * This is needed later for binding the `this` context of getters to only the getters and states.
+         * We could also bind all properties but this is not how vuex should be used in a non class based way.
+         *
+         * This is also way more performant than extracting the getters from the properties and defining them again
+         * everytime a getter is called. By doing it this way we just pass the _staticGetters property to the
+         * `this` context and that is it.
+         */
+        Object.defineProperty(constructor, '_staticGetters', {
+          value: Object.defineProperties(
+            {
+              $store: {},
+            },
+            getters
+          ),
+        });
+        Object.defineProperty(constructor, '$store', { writable: true });
+        Object.defineProperties(constructor, {
+          ...nestedPropertiesToDefine,
+          ...propertiesToDefine,
+        });
+      },
     });
-    Object.defineProperty(constructor, '$store', { writable: true });
-    Object.defineProperties(constructor, propertiesToDefine);
 
     return constructor;
   };
