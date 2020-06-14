@@ -13,6 +13,10 @@ function storeWrapper(doNotConfigStore = false) {
     @Getter getTest() {
       return this.test;
     }
+    @Getter modifyState() {
+      this.test = 'hello';
+      return this.test;
+    }
   }
 
   const tm = ExportVuexStore(TestModule);
@@ -35,12 +39,18 @@ beforeEach(() => {
 
 test('check if getter exists and is a function', () => {
   const { tm } = storeWrapper();
-  expect(tm.getters).toEqual({ getTest: expect.any(Function) });
+  expect(tm.getters).toEqual({
+    getTest: expect.any(Function),
+    modifyState: expect.any(Function),
+  });
 });
 
 test('the getter is present in the vuex store object', () => {
   const { store } = storeWrapper();
-  expect(Object.keys(store.getters)).toEqual(['testModule/getTest']);
+  expect(Object.keys(store.getters)).toEqual([
+    'testModule/getTest',
+    'testModule/modifyState',
+  ]);
 });
 
 test("calling getter returns the value from the 'test' variable", () => {
@@ -53,4 +63,20 @@ test('getters should work without the store passed to config', () => {
   const { store } = storeWrapper(true);
   const testVariable = store.getters['testModule/getTest'];
   expect(testVariable).toBe('test');
+});
+
+test('should throw warning when state is being modified directly from action', async () => {
+  const spy = jest.spyOn(global.console, 'warn').mockImplementation();
+
+  const { store } = storeWrapper();
+  const testVariable = store.getters['testModule/modifyState'];
+
+  expect(spy.mock.calls[0][0]).toBe(
+    '[testModule/test]: You cannot change this state outside a mutation.'
+  );
+  expect(spy).toHaveBeenCalledTimes(1);
+
+  expect(testVariable).toBe('test');
+
+  spy.mockRestore();
 });

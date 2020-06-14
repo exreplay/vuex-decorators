@@ -33,7 +33,7 @@ function storeWrapper(doNotConfigStore = false) {
   class TestModule extends VuexModule {
     private moduleName = 'testModule';
 
-    plainTestState = 'servus';
+    plainTestState = 'hello';
     @HasGetterAndMutation testState = 'test';
 
     @Nested() nested = new NestedStore();
@@ -54,6 +54,10 @@ function storeWrapper(doNotConfigStore = false) {
     @Action async testMutationThisContext() {
       this.testState = 'testModified';
       return this.nested.getNestedState();
+    }
+
+    @Action async modifyState() {
+      this.plainTestState = 'world';
     }
   }
 
@@ -80,6 +84,7 @@ test('check if action exists and is a function', () => {
   expect(tm.actions).toEqual({
     testMutationThisContext: expect.any(Function),
     testMutation$store: expect.any(Function),
+    modifyState: expect.any(Function),
   });
 });
 
@@ -102,4 +107,18 @@ test('actions should work without the store passed to config', async () => {
   const value = await store.dispatch('testModule/testMutation$store');
   expect(value).toBe('nested');
   expect((store.state as any).testModule.testState).toBe('testModified');
+});
+
+test('should throw warning when state is being modified directly from action', async () => {
+  const spy = jest.spyOn(global.console, 'warn').mockImplementation();
+
+  const { store } = storeWrapper();
+  await store.dispatch('testModule/modifyState');
+
+  expect(spy.mock.calls[0][0]).toBe(
+    '[testModule/plainTestState]: You cannot change this state outside a mutation.'
+  );
+  expect(spy).toHaveBeenCalledTimes(1);
+
+  spy.mockRestore();
 });
