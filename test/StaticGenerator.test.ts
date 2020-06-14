@@ -188,6 +188,11 @@ test('should generate static getters correctly', () => {
   expect(module.testCharCount).toBe(4);
   expect(propertiesToDefine.testCharCountTimes2.get!()()).toBe(8);
   expect(module.testCharCountTimes2()).toBe(8);
+
+  delete config.store;
+
+  expect(propertiesToDefine.testCharCount.get!()).toBeUndefined();
+  expect(propertiesToDefine.testCharCountTimes2.get!()()).toBeUndefined();
 });
 
 test('should generate static mutations correctly', () => {
@@ -226,6 +231,16 @@ test('should generate get and set for properties with HasGetterAndMutation', () 
   expect(propertiesToDefine.test.get!()).toBe('test2');
   expect(store.getters['testModule/test']).toBe('test2');
   expect(module.test).toBe('test2');
+
+  delete config.store;
+
+  expect(propertiesToDefine.test.get!()).toBeUndefined();
+  /**
+   * this should still be 'test2' because the fallback to $store should be used
+   * when config.store is not available
+   */
+  expect(store.getters['testModule/test']).toBe('test2');
+  expect(module.test).toBeUndefined();
 });
 
 test('should generate static actions correctly', async () => {
@@ -247,6 +262,17 @@ test('should generate static actions correctly', async () => {
   expect(val).toBeTruthy();
   expect(store.getters['testModule/test']).toBe('world');
   expect(module.test).toBe('world');
+
+  delete config.store;
+
+  val = await module.fetchTest({ test1: 'world' });
+  expect(val).toBeUndefined();
+  /**
+   * this should still be 'world' because the fallback to $store should be used
+   * when config.store is not available
+   */
+  expect(store.getters['testModule/test']).toBe('world');
+  expect(module.test).toBeUndefined();
 });
 
 test('should generate static properties for nested modules', async () => {
