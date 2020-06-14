@@ -1,5 +1,5 @@
 import { Getter } from 'vuex';
-import { stores, initStore, getClassName } from './utils';
+import { stores, initStore, getClassName, config } from './utils';
 
 export default function Getter<T, R>(
   target: T,
@@ -17,14 +17,23 @@ export default function Getter<T, R>(
     rootState: R,
     rootGetters: any
   ) => {
-    const targetModule = (target as any).constructor;
-    targetModule._staticGetters.$store = {
-      state,
-      getters,
-      rootState,
-      rootGetters,
-    };
-    const output = (target as any)[key].call(targetModule._staticGetters);
+    let output;
+    if (config.store) {
+      const targetModule = (target as any).constructor;
+      targetModule._staticGetters.$store = {
+        state,
+        getters,
+        rootState,
+        rootGetters,
+      };
+      output = (target as any)[key].call(targetModule._staticGetters);
+    } else {
+      const thisObject = { $store: { state, getters, rootState, rootGetters } };
+      for (const key of Object.keys(state)) {
+        Object.assign(thisObject, { [key]: (state as any)[key] });
+      }
+      output = (target as any)[key].call(thisObject);
+    }
     return output;
   };
 }
