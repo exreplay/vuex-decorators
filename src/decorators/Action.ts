@@ -1,5 +1,5 @@
 import { ActionContext, Action as VuexAction } from 'vuex';
-import { stores, initStore, getClassName } from './utils';
+import { stores, initStore, getClassName, config } from './utils';
 
 export default function Action<T, R>(
   target: T,
@@ -12,9 +12,17 @@ export default function Action<T, R>(
     context: ActionContext<any, any>,
     payload: any
   ) {
-    const targetModule = (target as any).constructor;
-    targetModule.$store = context;
-    return (target as any)[key].call(targetModule, payload);
+    if (config.store) {
+      const targetModule = (target as any).constructor;
+      targetModule.$store = context;
+      return (target as any)[key].call(targetModule, payload);
+    } else {
+      const thisObject = { $store: context };
+      for (const key of Object.keys(context.state)) {
+        Object.assign(thisObject, { [key]: context.state[key] });
+      }
+      return (target as any)[key].call(thisObject, payload);
+    }
   };
 
   stores[getClassName(target)].actions![key as string] = action;
