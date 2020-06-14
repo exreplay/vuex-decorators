@@ -18,7 +18,12 @@ export default function Getter<T, R>(
     rootGetters: any
   ) => {
     const targetModule = (target as any).constructor;
-    targetModule.$store = { state, getters, rootState, rootGetters };
+    targetModule._staticGetters.$store = {
+      state,
+      getters,
+      rootState,
+      rootGetters,
+    };
     const output = (target as any)[key].call(targetModule._staticGetters);
     return output;
   };
