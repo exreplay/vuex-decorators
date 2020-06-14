@@ -147,7 +147,7 @@ export default class TestStore extends VuexModule {
 
 You can see that everything is callable as it was defined. Eg. the `@Getter` was defined as a function and can be called like that.
 
-One thing you still have to keep in mind is that, we still follow the recommended vuex way. That means, you can only call the stuff that would be passed as context.
+One thing you still have to keep in mind is that we still follow the recommended vuex way. That means you can only call the stuff that would be passed as context.
 
 For `getters`:
 - state
