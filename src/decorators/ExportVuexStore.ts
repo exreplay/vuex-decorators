@@ -26,7 +26,8 @@ export default function ExportVuexStore<S, R, T, N>(
   target: T,
   exportAsReadyObject = false
 ): AverModule<S, R, N> | { [key: string]: AverModule<S, R, N> } {
-  (target as any)._genStatic();
+  const targetModule = target as any;
+  if (!targetModule._statics) targetModule._genStatic();
 
   const name = getClassName(target);
   const store = nestStore(name);
