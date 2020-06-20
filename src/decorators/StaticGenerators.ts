@@ -22,56 +22,79 @@ export function generateStaticNestedProperties<S, R, N>(
   fullPath?: string
 ): PropertiesToDefine {
   for (const { prop, moduleName, module } of store.nested) {
-    const nestedPropertiesToDefine = {};
-    const nestedModule = stores[moduleName];
+    const staticGettersPath = `_[${constructPath(
+      parentPath || store.moduleName,
+      moduleName,
+      ''
+    )}]staticGetters`;
+    const staticsPath = `_[${constructPath(
+      parentPath || store.moduleName,
+      moduleName,
+      ''
+    )}]statics`;
 
-    // We need to pass the full path to states because they, no matter if namespace true or false, always need the full path.
-    generateStaticStates(
-      nestedModule,
-      nestedPropertiesToDefine,
-      fullPath || store.moduleName
-    );
-    generateStaticGetters(
-      nestedModule,
-      nestedPropertiesToDefine,
-      parentPath || store.moduleName
-    );
+    if (!(module as any)[staticGettersPath] && !(module as any)[staticsPath]) {
+      const nestedPropertiesToDefine = {};
+      const nestedModule = stores[moduleName];
 
-    const getters = { ...nestedPropertiesToDefine };
-
-    generateStaticMutations(
-      nestedModule,
-      nestedPropertiesToDefine,
-      parentPath || store.moduleName
-    );
-    generateStaticActions(
-      nestedModule,
-      nestedPropertiesToDefine,
-      parentPath || store.moduleName
-    );
-
-    if (nestedModule.nested.length > 0) {
-      generateStaticNestedProperties(
+      // We need to pass the full path to states because they, no matter if namespace true or false, always need the full path.
+      generateStaticStates(
         nestedModule,
         nestedPropertiesToDefine,
-        constructPath(
-          parentPath || store.moduleName,
-          moduleName,
-          '',
-          nestedModule.namespaced
-        ),
-        constructPath(parentPath || store.moduleName, moduleName, '')
+        fullPath || store.moduleName
       );
+      generateStaticGetters(
+        nestedModule,
+        nestedPropertiesToDefine,
+        parentPath || store.moduleName
+      );
+
+      const getters = { ...nestedPropertiesToDefine };
+
+      generateStaticMutations(
+        nestedModule,
+        nestedPropertiesToDefine,
+        parentPath || store.moduleName
+      );
+      generateStaticActions(
+        nestedModule,
+        nestedPropertiesToDefine,
+        parentPath || store.moduleName
+      );
+
+      if (nestedModule.nested.length > 0) {
+        generateStaticNestedProperties(
+          nestedModule,
+          nestedPropertiesToDefine,
+          constructPath(
+            parentPath || store.moduleName,
+            moduleName,
+            '',
+            nestedModule.namespaced
+          ),
+          constructPath(parentPath || store.moduleName, moduleName, '')
+        );
+      }
+
+      Object.defineProperty(module, staticGettersPath, {
+        value: Object.defineProperties({ $store: {} }, getters),
+      });
+      Object.defineProperty(module, staticsPath, {
+        value: Object.defineProperties({}, nestedPropertiesToDefine),
+      });
+      Object.defineProperty(module, '$store', { writable: true });
     }
 
-    Object.defineProperty(module, '_staticGetters', {
-      value: Object.defineProperties({ $store: {} }, getters),
-    });
-    Object.defineProperty(module, '$store', { writable: true });
-    Object.defineProperties(module, nestedPropertiesToDefine);
-
     propertiesToDefine[prop] = {
-      get: () => module,
+      get: () => {
+        return (module as any)[
+          `_[${constructPath(
+            parentPath || store.moduleName,
+            moduleName,
+            ''
+          )}]statics`
+        ];
+      },
     };
   }
 
@@ -245,7 +268,9 @@ export function generateStaticActions<S, R, N>(
 }
 
 export function getModule<S>(module: ConstructorOf<S>): S {
-  return module as any;
+  const targetModule = module as any;
+  if (!targetModule._statics) targetModule._genStatic();
+  return targetModule._statics;
 }
 
 /**
