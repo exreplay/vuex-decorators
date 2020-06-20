@@ -63,8 +63,27 @@ export function assignStates<S>(Obj: any) {
         rootState: any,
         rootGetters: GetterTree<any, any>
       ) => {
-        Obj.$store = { state, getters, rootState, rootGetters };
-        const output = (descriptor.get as Function).call(Obj._staticGetters);
+        let output;
+        if (config.store) {
+          const targetModule = Obj;
+          targetModule._staticGetters.$store = {
+            state,
+            getters,
+            rootState,
+            rootGetters,
+          };
+          output = (descriptor.get as Function).call(
+            targetModule._staticGetters
+          );
+        } else {
+          const thisObject = {
+            $store: { state, getters, rootState, rootGetters },
+          };
+          for (const key of Object.keys(state)) {
+            Object.assign(thisObject, { [key]: (state as any)[key] });
+          }
+          output = (descriptor.get as Function).call(thisObject);
+        }
         return output;
       };
     }
