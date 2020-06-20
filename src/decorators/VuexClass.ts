@@ -50,6 +50,8 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
      */
     Object.defineProperty(constructor, '_genStatic', {
       value: () => {
+        if ((constructor as any)._statics) return;
+
         const nestedPropertiesToDefine = {};
         const propertiesToDefine = {};
 
@@ -79,10 +81,16 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
             getters
           ),
         });
-        Object.defineProperty(constructor, '$store', { writable: true });
-        Object.defineProperties(constructor, {
-          ...nestedPropertiesToDefine,
-          ...propertiesToDefine,
+        Object.defineProperty(constructor, '_statics', {
+          value: Object.defineProperties(
+            {
+              $store: {},
+            },
+            {
+              ...nestedPropertiesToDefine,
+              ...propertiesToDefine,
+            }
+          ),
         });
       },
     });
