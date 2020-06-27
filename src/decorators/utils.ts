@@ -1,4 +1,5 @@
 import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
+import { GetterFn } from './Getter';
 
 interface NestedModule<N> {
   prop: string;
@@ -57,35 +58,7 @@ export function assignStates<S>(Obj: any) {
   for (const func of functions) {
     const descriptor = Object.getOwnPropertyDescriptor(proto, func);
     if (descriptor && descriptor.get) {
-      getters[func] = (
-        state: S,
-        getters: GetterTree<S, any>,
-        rootState: any,
-        rootGetters: GetterTree<any, any>
-      ) => {
-        let output;
-        if (config.store) {
-          const targetModule = Obj;
-          targetModule._staticGetters.$store = {
-            state,
-            getters,
-            rootState,
-            rootGetters,
-          };
-          output = (descriptor.get as Function).call(
-            targetModule._staticGetters
-          );
-        } else {
-          const thisObject = {
-            $store: { state, getters, rootState, rootGetters },
-          };
-          for (const key of Object.keys(state)) {
-            Object.assign(thisObject, { [key]: (state as any)[key] });
-          }
-          output = (descriptor.get as Function).call(thisObject);
-        }
-        return output;
-      };
+      getters[func] = GetterFn(Obj, descriptor.get);
     }
     if (descriptor && descriptor.set) {
       mutations[func] = (state: S, payload: any) => {
