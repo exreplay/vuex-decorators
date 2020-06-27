@@ -10,6 +10,9 @@ function storeWrapper(doNotConfigStore = false) {
   class TestModule {
     moduleName = 'testModule';
     test = 'test';
+    get getterTest() {
+      return this.test;
+    }
     @Getter getTest() {
       return this.test;
     }
@@ -40,6 +43,7 @@ beforeEach(() => {
 test('check if getter exists and is a function', () => {
   const { tm } = storeWrapper();
   expect(tm.getters).toEqual({
+    getterTest: expect.any(Function),
     getTest: expect.any(Function),
     modifyState: expect.any(Function),
   });
@@ -48,6 +52,7 @@ test('check if getter exists and is a function', () => {
 test('the getter is present in the vuex store object', () => {
   const { store } = storeWrapper();
   expect(Object.keys(store.getters)).toEqual([
+    'testModule/getterTest',
     'testModule/getTest',
     'testModule/modifyState',
   ]);
@@ -56,7 +61,9 @@ test('the getter is present in the vuex store object', () => {
 test("calling getter returns the value from the 'test' variable", () => {
   const { store } = storeWrapper();
   const testVariable = store.getters['testModule/getTest'];
+  const getterTestVariable = store.getters['testModule/getterTest'];
   expect(testVariable).toBe('test');
+  expect(getterTestVariable).toBe('test');
 });
 
 test('getters should work without the store passed to config', () => {
