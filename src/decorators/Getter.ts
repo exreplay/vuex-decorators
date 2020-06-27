@@ -18,8 +18,18 @@ export default function Getter<T, R>(
     rootGetters: any
   ) => {
     let output;
-    if (config.store) {
-      const targetModule = (target as any).constructor;
+    const targetModule = (target as any).constructor;
+    if (config.store && targetModule._caller) {
+      targetModule[`${targetModule._caller}staticGetters`].$store = {
+        state,
+        getters,
+        rootState,
+        rootGetters,
+      };
+      output = (target as any)[key].call(
+        targetModule[`${targetModule._caller}staticGetters`]
+      );
+    } else if (config.store && targetModule._staticGetters) {
       targetModule._staticGetters.$store = {
         state,
         getters,

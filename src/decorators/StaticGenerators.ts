@@ -34,7 +34,11 @@ export function generateStaticNestedProperties<S, R, N>(
     )}]statics`;
 
     if (!(module as any)[staticGettersPath] && !(module as any)[staticsPath]) {
-      const nestedPropertiesToDefine = {};
+      const nestedPropertiesToDefine = {
+        _caller: {
+          writable: true,
+        },
+      };
       const nestedModule = stores[moduleName];
 
       // We need to pass the full path to states because they, no matter if namespace true or false, always need the full path.
@@ -77,16 +81,31 @@ export function generateStaticNestedProperties<S, R, N>(
       }
 
       Object.defineProperty(module, staticGettersPath, {
-        value: Object.defineProperties({ $store: {} }, getters),
+        value: Object.defineProperties(
+          {
+            $store: {},
+          },
+          getters
+        ),
       });
       Object.defineProperty(module, staticsPath, {
-        value: Object.defineProperties({}, nestedPropertiesToDefine),
+        value: Object.defineProperties(
+          {
+            $store: {},
+          },
+          nestedPropertiesToDefine
+        ),
       });
-      Object.defineProperty(module, '$store', { writable: true });
     }
 
     propertiesToDefine[prop] = {
-      get: () => {
+      get() {
+        (module as any)._caller = `_[${constructPath(
+          parentPath || store.moduleName,
+          moduleName,
+          ''
+        )}]`;
+
         return (module as any)[
           `_[${constructPath(
             parentPath || store.moduleName,
