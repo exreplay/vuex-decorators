@@ -19,10 +19,25 @@ function storeWrapper(doNotConfigStore = false) {
   @VuexClass({
     namespaced: true,
   })
+  class NestedAgainStore extends VuexModule {
+    private moduleName = 'nestedAgainStore';
+
+    nestedState = 'nested again';
+
+    @Getter getNestedState() {
+      return this.nestedState;
+    }
+  }
+
+  @VuexClass({
+    namespaced: true,
+  })
   class NestedStore extends VuexModule {
     private moduleName = 'nestedStore';
 
     nestedState = 'nested';
+
+    @Nested() nestedAgain = new NestedAgainStore();
 
     @Getter getNestedState() {
       return this.nestedState;

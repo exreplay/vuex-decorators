@@ -87,10 +87,18 @@ function storeFactory(setStoreToConfig = true) {
     }
   }
 
+  @VuexClass
+  class TestModule2 extends VuexModule {
+    private moduleName = 'testModule2';
+    @Nested(NestedModule) nestedModule = new NestedModule();
+  }
+
   const testModule = ExportVuexStore(TestModule);
+  const testModule2 = ExportVuexStore(TestModule2);
   const store = new Vuex.Store({
     modules: {
       [testModule.moduleName as string]: testModule,
+      [testModule2.moduleName as string]: testModule2,
     },
   });
 
@@ -98,8 +106,9 @@ function storeFactory(setStoreToConfig = true) {
   else config.store = undefined;
 
   const module = getModule(TestModule);
+  const module2 = getModule(TestModule2);
 
-  return { store, module };
+  return { store, module, module2 };
 }
 
 function wrapperFactory<S>(store: Store<S>, module: any) {
@@ -298,8 +307,9 @@ test('should generate static properties for nested modules', async () => {
 });
 
 test('calls on nested module should work correctly', () => {
-  const { module } = storeFactory();
+  const { module, module2 } = storeFactory();
   expect(module.nestedModule.test).toBe('test');
+  expect(module2.nestedModule.test).toBe('test');
 });
 
 test('should guard static props when store is not passed to config', async () => {
