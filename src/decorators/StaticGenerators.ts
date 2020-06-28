@@ -41,6 +41,20 @@ export function generateStaticNestedProperties<S, R, N>(
       };
       const nestedModule = stores[moduleName];
 
+      if (nestedModule.nested.length > 0) {
+        generateStaticNestedProperties(
+          nestedModule,
+          nestedPropertiesToDefine,
+          constructPath(
+            parentPath || store.moduleName,
+            moduleName,
+            '',
+            nestedModule.namespaced
+          ),
+          constructPath(parentPath || store.moduleName, moduleName, '')
+        );
+      }
+
       // We need to pass the full path to states because they, no matter if namespace true or false, always need the full path.
       generateStaticStates(
         nestedModule,
@@ -66,20 +80,6 @@ export function generateStaticNestedProperties<S, R, N>(
         parentPath || store.moduleName
       );
 
-      if (nestedModule.nested.length > 0) {
-        generateStaticNestedProperties(
-          nestedModule,
-          nestedPropertiesToDefine,
-          constructPath(
-            parentPath || store.moduleName,
-            moduleName,
-            '',
-            nestedModule.namespaced
-          ),
-          constructPath(parentPath || store.moduleName, moduleName, '')
-        );
-      }
-
       Object.defineProperty(module, staticGettersPath, {
         value: Object.defineProperties(
           {
@@ -100,19 +100,14 @@ export function generateStaticNestedProperties<S, R, N>(
 
     propertiesToDefine[prop] = {
       get() {
-        (module as any)._caller = `_[${constructPath(
+        const path = `_[${constructPath(
           parentPath || store.moduleName,
           moduleName,
           ''
         )}]`;
 
-        return (module as any)[
-          `_[${constructPath(
-            parentPath || store.moduleName,
-            moduleName,
-            ''
-          )}]statics`
-        ];
+        (module as any)._caller = path;
+        return (module as any)[`${path}statics`];
       },
     };
   }
