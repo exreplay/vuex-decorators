@@ -12,8 +12,15 @@ export default function Action<T, R>(
     context: ActionContext<any, any>,
     payload: any
   ) {
-    if (config.store) {
-      const targetModule = (target as any).constructor;
+    const targetModule = (target as any).constructor;
+
+    if (config.store && targetModule._caller) {
+      targetModule[`${targetModule._caller}statics`].$store = context;
+      return (target as any)[key].call(
+        targetModule[`${targetModule._caller}statics`],
+        payload
+      );
+    } else if (config.store && targetModule._statics) {
       targetModule._statics.$store = context;
       return (target as any)[key].call(targetModule._statics, payload);
     } else {
