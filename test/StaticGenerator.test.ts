@@ -35,7 +35,7 @@ beforeEach(() => {
   config.store = undefined;
 });
 
-function storeFactory(setStoreToConfig = true) {
+function storeFactory(setStoreToConfig = true, doNotExport = false) {
   @VuexClass
   class NestedModule extends VuexModule {
     private moduleName = 'nestedModule';
@@ -46,7 +46,7 @@ function storeFactory(setStoreToConfig = true) {
   class TestModule extends VuexModule {
     private moduleName = 'testModule';
 
-    @Nested(NestedModule) nestedModule = new NestedModule();
+    @Nested() nestedModule = new NestedModule();
 
     testState = 'test';
 
@@ -58,6 +58,10 @@ function storeFactory(setStoreToConfig = true) {
 
     set getSetTest(val) {
       this.test = val;
+    }
+
+    get nestedTest() {
+      return this.nestedModule.test;
     }
 
     /**
@@ -90,16 +94,20 @@ function storeFactory(setStoreToConfig = true) {
   @VuexClass
   class TestModule2 extends VuexModule {
     private moduleName = 'testModule2';
-    @Nested(NestedModule) nestedModule = new NestedModule();
+    @Nested() nestedModule = new NestedModule();
   }
 
-  const testModule = ExportVuexStore(TestModule);
-  const testModule2 = ExportVuexStore(TestModule2);
-  const store = new Vuex.Store({
-    modules: {
+  let modules = {};
+  if (!doNotExport) {
+    const testModule = ExportVuexStore(TestModule);
+    const testModule2 = ExportVuexStore(TestModule2);
+    modules = {
       [testModule.moduleName as string]: testModule,
       [testModule2.moduleName as string]: testModule2,
-    },
+    };
+  }
+  const store = new Vuex.Store({
+    modules,
   });
 
   if (setStoreToConfig) config.store = store;
@@ -108,7 +116,7 @@ function storeFactory(setStoreToConfig = true) {
   const module = getModule(TestModule);
   const module2 = getModule(TestModule2);
 
-  return { store, module, module2 };
+  return { store, TestModule, module, module2 };
 }
 
 function wrapperFactory<S>(store: Store<S>, module: any) {
@@ -134,6 +142,11 @@ function wrapperFactory<S>(store: Store<S>, module: any) {
     }
   );
 }
+
+test('getModule should not call _genStatic when _statics is already defined', () => {
+  const { TestModule } = storeFactory(true, true);
+  expect(() => getModule(TestModule)).not.toThrow();
+});
 
 test('generated properties should be reactive', async () => {
   const { store, module } = storeFactory();
@@ -186,11 +199,16 @@ test('should generate static getters correctly', () => {
     getSetTest: {
       get: expect.any(Function),
     },
+    nestedTest: {
+      get: expect.any(Function),
+    },
     testCharCount: {
       get: expect.any(Function),
     },
   });
 
+  expect(propertiesToDefine.nestedTest.get!()).toBe('test');
+  expect(module.nestedTest).toBe('test');
   expect(propertiesToDefine.test.get!()).toBe('test');
   expect(module.test).toBe('test');
   expect(propertiesToDefine.testCharCount.get!()).toBe(4);

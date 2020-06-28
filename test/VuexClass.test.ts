@@ -201,3 +201,15 @@ test('namespace should be set correctly when passed as option', () => {
   const tm = ExportVuexStore(TestModule);
   expect(tm.namespaced).toBeFalsy();
 });
+
+test('_genStatic should not redefine props when _statics exists', () => {
+  @VuexClass({
+    namespaced: false,
+  })
+  class TestModule {
+    moduleName = 'testModule';
+  }
+
+  ExportVuexStore(TestModule);
+  expect((TestModule as any)._genStatic()).toBeUndefined();
+});

@@ -1,15 +1,34 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { VuexClass, ExportVuexStore, Getter, config } from '../src';
+import {
+  VuexClass,
+  ExportVuexStore,
+  Getter,
+  config,
+  getModule,
+  Nested,
+} from '../src';
 import { stores } from '../src/decorators/utils';
 
 Vue.use(Vuex);
 
 function storeWrapper(doNotConfigStore = false) {
   @VuexClass
+  class NestedModule {
+    moduleName = 'nested';
+    lazyTest = 'nested';
+    get test() {
+      return this.lazyTest;
+    }
+  }
+  @VuexClass
   class TestModule {
     moduleName = 'testModule';
     test = 'test';
+    @Nested() nested = new NestedModule();
+    get nestedTest() {
+      return this.nested.test;
+    }
     get getterTest() {
       return this.test;
     }
@@ -32,7 +51,9 @@ function storeWrapper(doNotConfigStore = false) {
 
   if (!doNotConfigStore) config.store = store;
 
-  return { tm, store };
+  const module = getModule(TestModule);
+
+  return { tm, store, module };
 }
 
 beforeEach(() => {
@@ -46,22 +67,26 @@ test('check if getter exists and is a function', () => {
     getterTest: expect.any(Function),
     getTest: expect.any(Function),
     modifyState: expect.any(Function),
+    nestedTest: expect.any(Function),
   });
 });
 
 test('the getter is present in the vuex store object', () => {
   const { store } = storeWrapper();
   expect(Object.keys(store.getters)).toEqual([
+    'testModule/nestedTest',
     'testModule/getterTest',
     'testModule/getTest',
     'testModule/modifyState',
+    'testModule/nested/test',
   ]);
 });
 
 test("calling getter returns the value from the 'test' variable", () => {
-  const { store } = storeWrapper();
+  const { store, module } = storeWrapper();
   const testVariable = store.getters['testModule/getTest'];
-  const getterTestVariable = store.getters['testModule/getterTest'];
+  const getterTestVariable = module.getterTest;
+  expect(module.nestedTest).toBe('nested');
   expect(testVariable).toBe('test');
   expect(getterTestVariable).toBe('test');
 });
