@@ -23,7 +23,7 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
 
     const store = stores[getClassName(constructor)];
 
-    for (const obj of options?.extend || []) {
+    for (const obj of options.extend || []) {
       const extendStore = ExportVuexStore<any, any, typeof constructor, any>(
         obj
       );
@@ -36,10 +36,10 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
       Object.assign(store.mutations, extendStore.mutations);
     }
 
-    if (options?.persistent) store.persistent = options.persistent;
+    if (options.persistent) store.persistent = options.persistent;
     else store.persistent = false;
 
-    if (typeof options?.namespaced !== 'undefined') {
+    if (typeof options.namespaced !== 'undefined') {
       store.namespaced = options.namespaced;
     }
 
@@ -52,10 +52,9 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
       value: () => {
         if ((constructor as any)._statics) return;
 
-        const nestedPropertiesToDefine = {};
         const propertiesToDefine = {};
 
-        generateStaticNestedProperties(store, nestedPropertiesToDefine);
+        generateStaticNestedProperties(store, propertiesToDefine);
         generateStaticStates(store, propertiesToDefine);
         generateStaticGetters(store, propertiesToDefine);
 
@@ -86,10 +85,7 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
             {
               $store: {},
             },
-            {
-              ...nestedPropertiesToDefine,
-              ...propertiesToDefine,
-            }
+            propertiesToDefine
           ),
         });
       },
