@@ -42,6 +42,10 @@ function storeWrapper(doNotConfigStore = false) {
     @Getter getNestedState() {
       return this.nestedState;
     }
+
+    @Action async nestedAction() {
+      return this.nestedState;
+    }
   }
 
   @VuexClass
@@ -68,7 +72,7 @@ function storeWrapper(doNotConfigStore = false) {
 
     @Action async testMutationThisContext() {
       this.testState = 'testModified';
-      return this.nested.getNestedState();
+      return this.nested.nestedAction();
     }
 
     @Action async modifyState() {
