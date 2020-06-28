@@ -1,5 +1,5 @@
 import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
-import { GetterFn } from './Getter';
+import { GetterFn } from './helpers';
 
 interface NestedModule<N> {
   prop: string;
