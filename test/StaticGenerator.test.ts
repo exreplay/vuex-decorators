@@ -1,4 +1,4 @@
-import Vuex, { Store } from 'vuex';
+import { createStore, Store } from 'vuex';
 import {
   VuexClass,
   ExportVuexStore,
@@ -10,7 +10,7 @@ import {
   Nested,
 } from '../src';
 import { stores, config } from '../src/decorators/utils';
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import {
   getModule,
   generateStaticStates,
@@ -28,8 +28,6 @@ interface PayloadInterface {
 }
 
 let module: any;
-const localVue = createLocalVue();
-localVue.use(Vuex);
 
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
@@ -88,7 +86,7 @@ function storeFactory(setStoreToConfig = true) {
   }
 
   const testModule = ExportVuexStore(TestModule);
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [testModule.moduleName as string]: testModule,
     },
@@ -120,8 +118,9 @@ function wrapperFactory<S>(store: Store<S>) {
       },
     },
     {
-      localVue,
-      store,
+      global: {
+        plugins: [store],
+      },
     }
   );
 }

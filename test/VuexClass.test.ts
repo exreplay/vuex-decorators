@@ -1,9 +1,6 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import { VuexClass, ExportVuexStore } from '../src';
 import { stores } from '../src/decorators/utils';
-
-Vue.use(Vuex);
 
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
@@ -28,7 +25,7 @@ test("vuex store has a module named 'testModule'", () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [tm.moduleName as string]: tm,
     },
@@ -102,7 +99,7 @@ test('store should have a getter when using get', () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [tm.moduleName as string]: tm,
     },
@@ -125,7 +122,7 @@ test('getter should return value from test variable', () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [tm.moduleName as string]: tm,
     },
@@ -148,7 +145,7 @@ test('store should have a setter when using set', () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [tm.moduleName as string]: tm,
     },
@@ -177,7 +174,7 @@ test('set should mutate value and should be returned by getter', () => {
 
   const tm = ExportVuexStore(TestModule);
 
-  const store = new Vuex.Store({
+  const store = createStore<any>({
     modules: {
       [tm.moduleName as string]: tm,
     },

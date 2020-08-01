@@ -1,8 +1,5 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import { VuexClass, ExportVuexStore, Getter, Mutation } from '../src';
-
-Vue.use(Vuex);
 
 @VuexClass
 class TestModule {
@@ -20,7 +17,7 @@ class TestModule {
 
 const tm = ExportVuexStore(TestModule);
 
-const store = new Vuex.Store({
+const store = createStore<any>({
   modules: {
     [tm.moduleName as string]: tm,
   },

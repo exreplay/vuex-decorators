@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import {
   VuexClass,
   ExportVuexStore,
@@ -7,8 +6,6 @@ import {
   HasGetterAndMutation,
 } from '../src';
 import { VuexModule } from '../src/decorators/VuexClass';
-
-Vue.use(Vuex);
 
 @VuexClass
 class TestModule extends VuexModule {
@@ -22,7 +19,7 @@ class TestModule extends VuexModule {
 
 const tm = ExportVuexStore(TestModule);
 
-const store = new Vuex.Store({
+const store = createStore<any>({
   modules: {
     [tm.moduleName as string]: tm,
   },
@@ -37,5 +34,5 @@ test('check if action exists and is a function', () => {
 
 test("dispatching the 'testMutation' action mutates the test state to 'testModified'", async () => {
   await store.dispatch('testModule/testMutation');
-  expect((store.state as any).testModule.testState).toBe('testModified');
+  expect(store.state.testModule.testState).toBe('testModified');
 });

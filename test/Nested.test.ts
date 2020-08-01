@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import Vuex, { Module } from 'vuex';
+import { createStore, Module } from 'vuex';
 import {
   VuexClass,
   ExportVuexStore,
@@ -9,14 +8,12 @@ import {
 } from '../src';
 import { stores, config } from '../src/decorators/utils';
 
-Vue.use(Vuex);
-
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
 });
 
 function storeWrapper<S, R>(modules: { [key: string]: Module<S, R> }) {
-  return new Vuex.Store({
+  return createStore<any>({
     modules,
   });
 }

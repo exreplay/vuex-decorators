@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/jest": "25.2.2",
-    "@vue/test-utils": "1.0.3",
+    "@vue/test-utils": "2.0.0-beta.0",
     "codecov": "3.6.5",
     "jest": "26.0.1",
     "prettier": "2.0.5",
@@ -50,9 +50,7 @@
     "tslint-config-standard": "9.0.0",
     "tslint-plugin-prettier": "2.3.0",
     "typescript": "3.9.2",
-    "vue": "2.6.11",
-    "vue-template-compiler": "2.6.11",
     "vuepress": "1.5.1",
-    "vuex": "3.4.0"
+    "vuex": "4.0.0-beta.4"
   }
 }

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { stores, initStore, getClassName } from './utils';
 
 export default function HasGetterAndMutation<T>(
@@ -8,6 +7,6 @@ export default function HasGetterAndMutation<T>(
   initStore(target);
   stores[getClassName(target)].getters![key as string] = (state) => state[key];
   stores[getClassName(target)].mutations![key as string] = (state, val) => {
-    Vue.set(state, key as string, val);
+    state[key] = val;
   };
 }
