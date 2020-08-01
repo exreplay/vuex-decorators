@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0-beta.0](https://github.com/exreplay/vuex-decorators/compare/v3.2.1...v4.0.0-beta.0) (2020-08-01)
+
+
+### Features
+
+* update to vuex v4 with support for vue 3 ([bcdeeaf](https://github.com/exreplay/vuex-decorators/commit/bcdeeaf88ad16514f685e42359b8c0be719af4be))
+
+
+### Bug Fixes
+
+* added back vue as dev dep ([303e287](https://github.com/exreplay/vuex-decorators/commit/303e2872a5772560068d847ff63e9563287e24d9))
+
 ### [3.2.1](https://github.com/exreplay/vuex-decorators/compare/v3.2.0...v3.2.1) (2020-05-24)
 
 ## [3.2.0](https://github.com/exreplay/vuex-decorators/compare/v3.1.0...v3.2.0) (2020-05-24)

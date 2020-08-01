@@ -1,6 +1,6 @@
 {
   "name": "@averjs/vuex-decorators",
-  "version": "3.2.1",
+  "version": "4.0.0-beta.0",
   "description": "Decorators for Vuex.",
   "keywords": [
     "vue",
@@ -32,6 +32,8 @@
     "test": "jest && codecov",
     "build": "rollup --config",
     "lint": "tslint -c tslint.json 'src/**/*.ts' --fix --project tsconfig.json",
+    "release": "standard-version --release-as major --prerelease beta",
+    "release-dry": "standard-version --release-as major --prerelease beta --dry-run",
     "prepublish": "yarn build"
   },
   "devDependencies": {
