@@ -1,9 +1,5 @@
-import {
-  stores,
-  assignStates,
-  initStore,
-  getStates,
-} from '../src/decorators/utils';
+import { stores, initStore, getStates } from '../src/decorators/utils';
+import { assignStates } from '../src/decorators/helpers';
 
 console.error = jest.fn();
 
@@ -42,6 +38,6 @@ test('check if initializing store creates a valid vuex store object and state is
     modules: {},
   };
   expect(JSON.stringify(stores.testModule)).toEqual(JSON.stringify(obj));
-  expect(stores.testModule.state()).toEqual({});
-  expect(stores.testModule.state).toEqual(expect.any(Function));
+  expect(stores.testModule?.state()).toEqual({});
+  expect(stores.testModule?.state).toEqual(expect.any(Function));
 });

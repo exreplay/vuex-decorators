@@ -14,13 +14,13 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import {
   getModule,
   generateStaticStates,
-  PropertiesToDefine,
   generateStaticGetters,
   generateStaticMutations,
   generateStaticActions,
   generateStaticNestedProperties,
   constructPath,
 } from '../src/decorators/StaticGenerators';
+import { PropertiesToDefine } from '../src/types';
 
 interface PayloadInterface {
   test1: string;
@@ -44,7 +44,7 @@ function storeFactory(setStoreToConfig = true, doNotExport = false) {
 
   @VuexClass
   class TestModule extends VuexModule {
-    private moduleName = 'testModule';
+    moduleName = 'testModule';
 
     @Nested() nestedModule = new NestedModule();
 
@@ -169,7 +169,7 @@ test('generated properties should be reactive', async () => {
 test('should generate static states correctly', () => {
   const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticStates(stores.testModule, propertiesToDefine);
+  generateStaticStates(stores.testModule!, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
     testState: {
       get: expect.any(Function),
@@ -188,7 +188,7 @@ test('should generate static states correctly', () => {
 test('should generate static getters correctly', () => {
   const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticGetters(stores.testModule, propertiesToDefine);
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
     testCharCountTimes2: {
       get: expect.any(Function),
@@ -225,7 +225,7 @@ test('should generate static getters correctly', () => {
 test('should generate static mutations correctly', () => {
   const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticMutations(stores.testModule, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
 
   expect(propertiesToDefine).toEqual({
     test: {
@@ -251,8 +251,8 @@ test('should generate static mutations correctly', () => {
 test('should generate get and set for properties with HasGetterAndMutation', () => {
   const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticGetters(stores.testModule, propertiesToDefine);
-  generateStaticMutations(stores.testModule, propertiesToDefine);
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
 
   propertiesToDefine.test.set!('test2');
   expect(propertiesToDefine.test.get!()).toBe('test2');
@@ -273,7 +273,7 @@ test('should generate get and set for properties with HasGetterAndMutation', () 
 test('should generate static actions correctly', async () => {
   const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticActions(stores.testModule, propertiesToDefine);
+  generateStaticActions(stores.testModule!, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
     fetchTest: {
       value: expect.any(Function),
@@ -316,7 +316,7 @@ test('should generate static properties for nested modules', async () => {
   }
 
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticNestedProperties(stores.testModule, propertiesToDefine);
+  generateStaticNestedProperties(stores.testModule!, propertiesToDefine);
   expect(propertiesToDefine).toEqual({
     nestedModule: {
       get: expect.any(Function),
@@ -333,10 +333,10 @@ test('calls on nested module should work correctly', () => {
 test('should guard static props when store is not passed to config', async () => {
   const { module } = storeFactory(false);
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticStates(stores.testModule, propertiesToDefine);
-  generateStaticGetters(stores.testModule, propertiesToDefine);
-  generateStaticMutations(stores.testModule, propertiesToDefine);
-  generateStaticActions(stores.testModule, propertiesToDefine);
+  generateStaticStates(stores.testModule!, propertiesToDefine);
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
+  generateStaticActions(stores.testModule!, propertiesToDefine);
 
   expect(module.testState).toBeUndefined();
 

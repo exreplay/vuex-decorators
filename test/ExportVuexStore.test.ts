@@ -1,5 +1,5 @@
-import { VuexClass, ExportVuexStore } from '../src';
-import { AverModule } from '../src/decorators/utils';
+import { VuexClass, ExportVuexStore, Nested } from '../src';
+import { AverModule } from '../src/types';
 
 function storeWrapper(exportAsReadyObject = false) {
   @VuexClass
@@ -35,4 +35,10 @@ test('tm should be plain object with moduleName prop', () => {
 test('tm object should have a key like the moduleName', () => {
   const tm = storeWrapper(true);
   expect(Object.keys(tm)).toEqual(['testModule']);
+});
+
+test('should return empty object when passing wrong object', () => {
+  class Test {}
+  const tm = ExportVuexStore(Test);
+  expect(tm).toEqual({ nested: [] });
 });

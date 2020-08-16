@@ -1,11 +1,6 @@
-import { config, AverModule, stores } from './utils';
+import { stores, config } from './utils';
 import { GetterTree, MutationTree, ActionTree } from 'vuex';
-
-export type ConstructorOf<C> = { new (...args: any[]): C };
-
-export interface PropertiesToDefine {
-  [key: string]: PropertyDescriptor & ThisType<any>;
-}
+import { AverModule, PropertiesToDefine, ConstructorOf } from '../types';
 
 /**
  * Generate static properties for nested modules
@@ -39,7 +34,7 @@ export function generateStaticNestedProperties<S, R, N>(
           writable: true,
         },
       };
-      const nestedModule = stores[moduleName];
+      const nestedModule = stores[moduleName]!;
 
       if (nestedModule.nested.length > 0) {
         generateStaticNestedProperties(

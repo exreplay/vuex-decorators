@@ -1,5 +1,5 @@
 import ExportVuexStore from './ExportVuexStore';
-import { stores, assignStates, getClassName } from './utils';
+import { stores, getClassName } from './utils';
 import { ActionContext } from 'vuex';
 import {
   generateStaticStates,
@@ -8,20 +8,16 @@ import {
   generateStaticActions,
   generateStaticNestedProperties,
 } from './StaticGenerators';
-
-interface VuexClassOptions {
-  persistent?: Array<string>;
-  extend?: Array<any>;
-  namespaced?: boolean;
-}
+import { VuexClassOptions, VuexModuleClass } from '../types';
+import { assignStates } from './helpers';
 
 function generateVuexClass<S, R>(options: VuexClassOptions) {
-  return <TFunction extends Function>(
+  return <TFunction extends VuexModuleClass<S, R>>(
     constructor: TFunction
   ): TFunction | void => {
     assignStates(constructor);
 
-    const store = stores[getClassName(constructor)];
+    const store = stores[getClassName(constructor)]!;
 
     for (const obj of options.extend || []) {
       const extendStore = ExportVuexStore<any, any, typeof constructor, any>(
@@ -99,14 +95,16 @@ export class VuexModule<S = ThisType<any>, R = any> {
   $store!: ActionContext<S, R>;
 }
 
-export function VuexClass(module: Function & VuexClassOptions): void;
+export function VuexClass<S, R>(
+  module: VuexModuleClass<S, R> & VuexClassOptions
+): void;
 export function VuexClass(options: VuexClassOptions): ClassDecorator;
 
-export function VuexClass(
-  options: VuexClassOptions | (Function & VuexClassOptions)
+export function VuexClass<S, R>(
+  options: VuexClassOptions | (VuexModuleClass<S, R> & VuexClassOptions)
 ) {
   if (typeof (options as any) === 'function') {
-    generateVuexClass({})(options as Function & VuexClassOptions);
+    generateVuexClass({})(options as VuexModuleClass<S, R> & VuexClassOptions);
   } else {
     return generateVuexClass(options);
   }
