@@ -26,8 +26,8 @@ export interface VuexModuleClass<S, R> extends Function {
   };
 }
 
-export interface NewableVuexModuleClass<S, R> extends VuexModuleClass<S, R> {
-  new (): this;
+export interface NewableVuexModuleClass<S, R> {
+  new (): VuexModuleClass<S, R>;
 }
 
 export interface VuexModuleTarget<S = any, R = any> extends Object {
