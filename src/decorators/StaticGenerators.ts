@@ -1,6 +1,11 @@
 import { stores, config } from './utils';
 import { GetterTree, MutationTree, ActionTree } from 'vuex';
-import { AverModule, PropertiesToDefine, ConstructorOf } from '../types';
+import {
+  AverModule,
+  PropertiesToDefine,
+  ConstructorOf,
+  VuexModuleClass,
+} from '../types';
 
 /**
  * Generate static properties for nested modules
@@ -10,8 +15,8 @@ import { AverModule, PropertiesToDefine, ConstructorOf } from '../types';
  * @param parentPath The path of the parent module to help construct nested paths
  * @param fullPath The full path of the nesting
  */
-export function generateStaticNestedProperties<S, R, N>(
-  store: AverModule<S, R, N>,
+export function generateStaticNestedProperties<S, R>(
+  store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
   parentPath?: string,
   fullPath?: string
@@ -28,7 +33,7 @@ export function generateStaticNestedProperties<S, R, N>(
       ''
     )}]statics`;
 
-    if (!(module as any)[staticGettersPath] && !(module as any)[staticsPath]) {
+    if (!module[staticGettersPath] && !module[staticsPath]) {
       const nestedPropertiesToDefine = {
         _caller: {
           writable: true,
@@ -95,14 +100,15 @@ export function generateStaticNestedProperties<S, R, N>(
 
     propertiesToDefine[prop] = {
       get() {
+        // Before we can return the nested module we want to call, we need to set the internal _caller prop to the current path.
         const path = `_[${constructPath(
           parentPath || store.moduleName,
           moduleName,
           ''
         )}]`;
 
-        (module as any)._caller = path;
-        return (module as any)[`${path}statics`];
+        module._caller = path;
+        return module[`${path}statics`];
       },
     };
   }
@@ -117,8 +123,8 @@ export function generateStaticNestedProperties<S, R, N>(
  * @param propertiesToDefine The object which gets defined on the constructor
  * @param parentModuleName The path of the parent module
  */
-export function generateStaticStates<S, R, N>(
-  store: AverModule<S, R, N>,
+export function generateStaticStates<S, R>(
+  store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
@@ -151,8 +157,8 @@ export function generateStaticStates<S, R, N>(
  * @param propertiesToDefine The object which gets defined on the constructor
  * @param parentModuleName The path of the parent module
  */
-export function generateStaticGetters<S, R, N>(
-  store: AverModule<S, R, N>,
+export function generateStaticGetters<S, R>(
+  store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
@@ -200,8 +206,8 @@ export function generateStaticGetters<S, R, N>(
  * @param propertiesToDefine The object which gets defined on the constructor
  * @param parentModuleName The path of the parent module
  */
-export function generateStaticMutations<S, R, N>(
-  store: AverModule<S, R, N>,
+export function generateStaticMutations<S, R>(
+  store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {
@@ -251,8 +257,8 @@ export function generateStaticMutations<S, R, N>(
  * @param propertiesToDefine The object which gets defined on the constructor
  * @param parentModuleName The path of the parent module
  */
-export function generateStaticActions<S, R, N>(
-  store: AverModule<S, R, N>,
+export function generateStaticActions<S, R>(
+  store: AverModule<S, R>,
   propertiesToDefine: PropertiesToDefine,
   parentModuleName: string = ''
 ): PropertiesToDefine {

@@ -41,21 +41,21 @@ export interface PropertiesToDefine {
   [key: string]: PropertyDescriptor & ThisType<any>;
 }
 
-export interface NestedModule<N> {
+export interface NestedModule<S, R> {
   prop: string;
   moduleName: string;
-  module: N;
+  module: VuexModuleClass<S, R>;
 }
 
-export interface AverModule<S, R, N> extends Module<S, R> {
+export interface AverModule<S, R> extends Module<S, R> {
   moduleName?: string;
   persistent?: string[] | boolean;
-  nested: NestedModule<N>[];
+  nested: NestedModule<S, R>[];
   _getterFns?: GetterTree<S, R>;
 }
 
-export interface Store<S, R, N> {
-  [key: string]: AverModule<S, R, N> | undefined;
+export interface Store<S, R> {
+  [key: string]: AverModule<S, R> | undefined;
 }
 
 export interface Config<S> {

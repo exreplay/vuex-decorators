@@ -1,7 +1,7 @@
 import { stores, getClassName } from './utils';
 import { VuexModuleClass, AverModule } from '../types';
 
-function mapGetterFns<S, R, N>(store: AverModule<S, R, N>) {
+function mapGetterFns<S, R>(store: AverModule<S, R>) {
   store.getters = {
     ...store.getters,
     ...store._getterFns,
@@ -18,7 +18,7 @@ function nestStore(name: string) {
     if (stores[moduleName]) {
       const nestedModule = { ...stores[moduleName]! };
       mapGetterFns(nestedModule);
-      store.modules![moduleName] = nestedModule;
+      if (store.modules) store.modules[moduleName] = nestedModule;
       if (nestedModule.nested.length > 0) nestStore(moduleName);
     }
   }
@@ -34,7 +34,7 @@ export default function ExportVuexStore<
 >(
   target: T,
   exportAsReadyObject = false
-): AverModule<S, R, N> | { [key: string]: AverModule<S, R, N> } {
+): AverModule<S, R> | { [key: string]: AverModule<S, R> } {
   if (!target._statics && target._genStatic) target._genStatic();
 
   const name = getClassName(target);

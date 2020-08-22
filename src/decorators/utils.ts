@@ -2,7 +2,7 @@ import { Config, Store, VuexModuleTarget } from '../types';
 
 export const config: Config<any> = {};
 
-export const stores: Store<any, any, any> = {};
+export const stores: Store<any, any> = {};
 
 export function getStates<T extends VuexModuleTarget<S, R>, S, R>(
   target: T,
