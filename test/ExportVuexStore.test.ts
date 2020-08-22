@@ -11,9 +11,9 @@ function storeWrapper(exportAsReadyObject = false) {
   return tm;
 }
 
-test('check if object is a valid vuex object', <S = any, R = any, N = any>() => {
+test('check if object is a valid vuex object', <S = any, R = any>() => {
   const tm = storeWrapper();
-  const obj: AverModule<S, R, N> = {
+  const obj: AverModule<S, R> = {
     namespaced: true,
     nested: [],
     getters: {},
