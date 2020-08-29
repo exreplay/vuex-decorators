@@ -6,7 +6,7 @@ Everything shown below assumes that you passed the final store to `config.store`
 
 ## How to use it
 
-When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create and pass through the `ExportVuexStore` function, which can be accessed by passing the store through the `getModule` method.
+When using the default way of accessing the vuex store, you never know eg. what type the getter returns or what payload the action accepts. Thats why we automatically create static properties on every vuex module you create and pass through the `ExportVuexStore` function. Before we are ready to access the static properties, we need to pass the class to the `getModule` function, which returns the static properties.
 
 First we need a basic vuex module.
 
@@ -82,7 +82,7 @@ This feature is not limited to Typescript. It can also be used with Babel. Even 
 
 ## `this` context
 
-In the example above, you can see that inside the action, in order to mutate a state, we used `this.$store`. This elminiates typings and can be prone to errors. To make DX even better, you can call every action, mutation, ... by using `this`, like you would do in a normal class. This also works with nested stores. The example above could look something like this.
+In the example above, you can see that inside the action, in order to mutate a state, we used `this.$store`. This eliminates typings and can be prone to errors. To make DX even better, you can call every action, mutation, ... by using `this`, like you would do in a normal class. This also works with nested stores. The example above could look something like this.
 
 ```typescript{40,41,42,43,44,54,56}
 import {
