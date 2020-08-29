@@ -12,6 +12,7 @@ Thanks to Decorators in Typescript and Babel, we are able to transform the borin
 - Works with Babel and Typescript
 - Type-safe way of accessing the store with static class properties
 - Nested modules with namespace awareness (There is no limit 👌)
+- Support for SSR
 
 ## Transpiler Setup
 
