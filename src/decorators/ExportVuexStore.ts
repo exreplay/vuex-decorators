@@ -26,12 +26,7 @@ function nestStore(name: string) {
   return store;
 }
 
-export default function ExportVuexStore<
-  S,
-  R,
-  T extends VuexModuleClass<S, R>,
-  N
->(
+export default function ExportVuexStore<S, R, T extends VuexModuleClass<S, R>>(
   target: T,
   exportAsReadyObject = false
 ): AverModule<S, R> | { [key: string]: AverModule<S, R> } {

@@ -1,11 +1,6 @@
 import { stores, config } from './utils';
 import { GetterTree, MutationTree, ActionTree } from 'vuex';
-import {
-  AverModule,
-  PropertiesToDefine,
-  ConstructorOf,
-  VuexModuleClass,
-} from '../types';
+import { AverModule, PropertiesToDefine, ConstructorOf } from '../types';
 
 /**
  * Generate static properties for nested modules

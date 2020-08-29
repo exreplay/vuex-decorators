@@ -20,9 +20,7 @@ function generateVuexClass<S, R>(options: VuexClassOptions) {
     const store = stores[getClassName(constructor)]!;
 
     for (const obj of options.extend || []) {
-      const extendStore = ExportVuexStore<any, any, typeof constructor, any>(
-        obj
-      );
+      const extendStore = ExportVuexStore<any, any, typeof constructor>(obj);
       const oldState = store.state();
       const newState = extendStore.state();
       const stateFactory = () => Object.assign(oldState, newState);
