@@ -14,28 +14,28 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import {
   getModule,
   generateStaticStates,
-  PropertiesToDefine,
   generateStaticGetters,
   generateStaticMutations,
   generateStaticActions,
   generateStaticNestedProperties,
   constructPath,
 } from '../src/decorators/StaticGenerators';
+import { PropertiesToDefine } from '../src/types';
 
 interface PayloadInterface {
   test1: string;
   test2?: string[];
 }
 
-let module: any;
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 beforeEach(() => {
   for (const store of Object.keys(stores)) delete stores[store];
+  config.store = undefined;
 });
 
-function storeFactory(setStoreToConfig = true) {
+function storeFactory(setStoreToConfig = true, doNotExport = false) {
   @VuexClass
   class NestedModule extends VuexModule {
     private moduleName = 'nestedModule';
@@ -44,7 +44,7 @@ function storeFactory(setStoreToConfig = true) {
 
   @VuexClass
   class TestModule extends VuexModule {
-    private moduleName = 'testModule';
+    moduleName = 'testModule';
 
     @Nested() nestedModule = new NestedModule();
 
@@ -58,6 +58,10 @@ function storeFactory(setStoreToConfig = true) {
 
     set getSetTest(val) {
       this.test = val;
+    }
+
+    get nestedTest() {
+      return this.nestedModule.test;
     }
 
     /**
@@ -87,22 +91,35 @@ function storeFactory(setStoreToConfig = true) {
     }
   }
 
-  const testModule = ExportVuexStore(TestModule);
-  const store = new Vuex.Store({
-    modules: {
+  @VuexClass
+  class TestModule2 extends VuexModule {
+    private moduleName = 'testModule2';
+    @Nested() nestedModule = new NestedModule();
+  }
+
+  let modules = {};
+  if (!doNotExport) {
+    const testModule = ExportVuexStore(TestModule);
+    const testModule2 = ExportVuexStore(TestModule2);
+    modules = {
       [testModule.moduleName as string]: testModule,
-    },
+      [testModule2.moduleName as string]: testModule2,
+    };
+  }
+  const store = new Vuex.Store({
+    modules,
   });
 
   if (setStoreToConfig) config.store = store;
   else config.store = undefined;
 
-  module = getModule(TestModule);
+  const module = getModule(TestModule);
+  const module2 = getModule(TestModule2);
 
-  return store;
+  return { store, TestModule, module, module2 };
 }
 
-function wrapperFactory<S>(store: Store<S>) {
+function wrapperFactory<S>(store: Store<S>, module: any) {
   return mount(
     {
       template:
@@ -115,7 +132,7 @@ function wrapperFactory<S>(store: Store<S>) {
           return module.testCharCount;
         },
         testCharCountTimes2() {
-          return module.testCharCountTimes2;
+          return module.testCharCountTimes2();
         },
       },
     },
@@ -126,9 +143,14 @@ function wrapperFactory<S>(store: Store<S>) {
   );
 }
 
+test('getModule should not call _genStatic when _statics is already defined', () => {
+  const { TestModule } = storeFactory(true, true);
+  expect(() => getModule(TestModule)).not.toThrow();
+});
+
 test('generated properties should be reactive', async () => {
-  const store = storeFactory();
-  const component = wrapperFactory(store);
+  const { store, module } = storeFactory();
+  const component = wrapperFactory(store, module);
   expect(component.text()).toBe('4 8 test');
 
   await module.fetchTest({ test1: 'hello' });
@@ -145,71 +167,77 @@ test('generated properties should be reactive', async () => {
 });
 
 test('should generate static states correctly', () => {
-  storeFactory();
+  const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticStates(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      testState: {
-        get() {},
-      },
-      test: {
-        get() {},
-      },
-    })
-  );
+  generateStaticStates(stores.testModule!, propertiesToDefine);
+  expect(propertiesToDefine).toEqual({
+    testState: {
+      get: expect.any(Function),
+      set: expect.any(Function),
+    },
+    test: {
+      get: expect.any(Function),
+      set: expect.any(Function),
+    },
+  });
 
   expect(propertiesToDefine.test.get!()).toBe('test');
   expect(module.test).toBe('test');
 });
 
 test('should generate static getters correctly', () => {
-  storeFactory();
+  const { module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticGetters(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      test: {
-        get() {},
-      },
-      testCharCountTimes2: {
-        get() {},
-      },
-      getSetTest: {
-        get() {},
-      },
-      testCharCount: {
-        get() {},
-      },
-    })
-  );
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
+  expect(propertiesToDefine).toEqual({
+    testCharCountTimes2: {
+      get: expect.any(Function),
+    },
+    test: {
+      get: expect.any(Function),
+    },
+    getSetTest: {
+      get: expect.any(Function),
+    },
+    nestedTest: {
+      get: expect.any(Function),
+    },
+    testCharCount: {
+      get: expect.any(Function),
+    },
+  });
 
+  expect(propertiesToDefine.nestedTest.get!()).toBe('test');
+  expect(module.nestedTest).toBe('test');
   expect(propertiesToDefine.test.get!()).toBe('test');
   expect(module.test).toBe('test');
   expect(propertiesToDefine.testCharCount.get!()).toBe(4);
   expect(module.testCharCount).toBe(4);
-  expect(propertiesToDefine.testCharCountTimes2.get!()).toBe(8);
-  expect(module.testCharCountTimes2).toBe(8);
+  expect(propertiesToDefine.testCharCountTimes2.get!()()).toBe(8);
+  expect(module.testCharCountTimes2()).toBe(8);
+
+  delete config.store;
+
+  expect(propertiesToDefine.testCharCount.get!()).toBeUndefined();
+  expect(propertiesToDefine.testCharCountTimes2.get!()()).toBeUndefined();
 });
 
 test('should generate static mutations correctly', () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticMutations(stores.testModule, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
 
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      test: {
-        set() {},
-      },
-      setTest: {
-        value() {},
-      },
-      getSetTest: {
-        set() {},
-      },
-    })
-  );
+  expect(propertiesToDefine).toEqual({
+    test: {
+      value: expect.any(Function),
+    },
+    setTest: {
+      value: expect.any(Function),
+    },
+    getSetTest: {
+      value: expect.any(Function),
+    },
+  });
 
   propertiesToDefine.test.value!('test2');
   expect(store.getters['testModule/test']).toBe('test2');
@@ -221,28 +249,36 @@ test('should generate static mutations correctly', () => {
 });
 
 test('should generate get and set for properties with HasGetterAndMutation', () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticGetters(stores.testModule, propertiesToDefine);
-  generateStaticMutations(stores.testModule, propertiesToDefine);
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
 
   propertiesToDefine.test.set!('test2');
   expect(propertiesToDefine.test.get!()).toBe('test2');
   expect(store.getters['testModule/test']).toBe('test2');
   expect(module.test).toBe('test2');
+
+  delete config.store;
+
+  expect(propertiesToDefine.test.get!()).toBeUndefined();
+  /**
+   * this should still be 'test2' because the fallback to $store should be used
+   * when config.store is not available
+   */
+  expect(store.getters['testModule/test']).toBe('test2');
+  expect(module.test).toBeUndefined();
 });
 
 test('should generate static actions correctly', async () => {
-  const store = storeFactory();
+  const { store, module } = storeFactory();
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticActions(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      fetchTest: {
-        value() {},
-      },
-    })
-  );
+  generateStaticActions(stores.testModule!, propertiesToDefine);
+  expect(propertiesToDefine).toEqual({
+    fetchTest: {
+      value: expect.any(Function),
+    },
+  });
 
   let val = await propertiesToDefine.fetchTest.value({ test1: 'hello' });
   expect(val).toBeTruthy();
@@ -253,33 +289,54 @@ test('should generate static actions correctly', async () => {
   expect(val).toBeTruthy();
   expect(store.getters['testModule/test']).toBe('world');
   expect(module.test).toBe('world');
+
+  delete config.store;
+
+  val = await module.fetchTest({ test1: 'world' });
+  expect(val).toBeUndefined();
+  /**
+   * this should still be 'world' because the fallback to $store should be used
+   * when config.store is not available
+   */
+  expect(store.getters['testModule/test']).toBe('world');
+  expect(module.test).toBeUndefined();
 });
 
 test('should generate static properties for nested modules', async () => {
-  storeFactory();
+  @VuexClass
+  class NestedModule extends VuexModule {
+    private moduleName = 'nestedModule';
+    test = 'test';
+  }
+
+  @VuexClass
+  class TestModule extends VuexModule {
+    private moduleName = 'testModule';
+    @Nested(NestedModule) nestedModule = new NestedModule();
+  }
+
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticNestedProperties(stores.testModule, propertiesToDefine);
-  expect(JSON.stringify(propertiesToDefine)).toEqual(
-    JSON.stringify({
-      nestedModule: {},
-    })
-  );
+  generateStaticNestedProperties(stores.testModule!, propertiesToDefine);
+  expect(propertiesToDefine).toEqual({
+    nestedModule: {
+      get: expect.any(Function),
+    },
+  });
+});
 
-  // tslint:disable-next-line: no-empty
-  const testFunction = function () {};
-  Object.defineProperties(testFunction, propertiesToDefine);
-
-  expect((testFunction as any).nestedModule.test).toBe('test');
+test('calls on nested module should work correctly', () => {
+  const { module, module2 } = storeFactory();
   expect(module.nestedModule.test).toBe('test');
+  expect(module2.nestedModule.test).toBe('test');
 });
 
 test('should guard static props when store is not passed to config', async () => {
-  storeFactory(false);
+  const { module } = storeFactory(false);
   const propertiesToDefine: PropertiesToDefine = {};
-  generateStaticStates(stores.testModule, propertiesToDefine);
-  generateStaticGetters(stores.testModule, propertiesToDefine);
-  generateStaticMutations(stores.testModule, propertiesToDefine);
-  generateStaticActions(stores.testModule, propertiesToDefine);
+  generateStaticStates(stores.testModule!, propertiesToDefine);
+  generateStaticGetters(stores.testModule!, propertiesToDefine);
+  generateStaticMutations(stores.testModule!, propertiesToDefine);
+  generateStaticActions(stores.testModule!, propertiesToDefine);
 
   expect(module.testState).toBeUndefined();
 

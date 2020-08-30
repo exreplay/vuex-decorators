@@ -1,15 +1,16 @@
 import { stores, initStore, getClassName } from './utils';
+import { VuexModuleTarget } from '../types';
 
-export default function Mutation<T, R>(
+export default function Mutation<T extends VuexModuleTarget<S, R>, S, R>(
   target: T,
-  key: string | symbol,
-  descriptor: TypedPropertyDescriptor<(...args: any[]) => R>
+  key: string | symbol
 ) {
   initStore(target);
-  stores[getClassName(target)].mutations![key as string] = <S, R>(
+
+  stores[getClassName(target)]!.mutations![key as string] = <S, R>(
     state: S,
     payload: R
   ) => {
-    (target as any)[key].call(state, payload);
+    target[key as string].call(state, payload);
   };
 }

@@ -1,99 +1,23 @@
-import { Store as VuexStore, Module, GetterTree, MutationTree } from 'vuex';
-
-interface NestedModule {
-  prop: string;
-  moduleName: string;
-}
-
-export interface AverModule<S, R> extends Module<S, R> {
-  moduleName?: string;
-  persistent?: string[] | boolean;
-  nested: NestedModule[];
-}
-
-interface Store<S, R> {
-  [key: string]: AverModule<S, R>;
-}
-
-interface Config<S> {
-  store?: VuexStore<S>;
-}
+import { Config, Store, VuexModuleTarget } from '../types';
 
 export const config: Config<any> = {};
 
 export const stores: Store<any, any> = {};
 
-export function assignStates<S>(Obj: any) {
-  const target = new Obj();
-  let props = Object.getOwnPropertyNames(target);
-  if (typeof target.moduleName === 'undefined') {
-    console.error(
-      `You need to define the 'moduleName' class variable inside '${target.constructor.name}'! Otherwise it won't be added to the Vuex Store!`
-    );
-  }
-
-  initStore(target);
-
-  /**
-   * We need to remove all props which have a moduleName and therefore are instances of a nested module.
-   * If we dont do that, every nested prop would be also declared as state and vuex throws a warning.
-   */
-  props = props.filter((prop) => !target[prop]?.moduleName);
-
-  stores[getClassName(target)].moduleName = target.moduleName;
-  props.splice(props.indexOf('moduleName'), 1);
-
-  const stateFactory = () => getStates(target, props);
-  stores[getClassName(target)].state = stateFactory;
-
-  const proto = Object.getPrototypeOf(target);
-  const functions = Object.getOwnPropertyNames(proto);
-
-  const getters = {} as GetterTree<S, any>;
-  const mutations = {} as MutationTree<S>;
-
-  for (const func of functions) {
-    const descriptor = Object.getOwnPropertyDescriptor(proto, func);
-    if (descriptor && descriptor.get) {
-      getters[func] = (
-        state: S,
-        getters: GetterTree<S, any>,
-        rootState: any,
-        rootGetters: GetterTree<any, any>
-      ) => {
-        const thisObject = {
-          $store: { state, getters, rootState, rootGetters },
-        };
-        for (const key of Object.keys(state)) {
-          Object.defineProperty(thisObject, key, {
-            get: () => (state as any)[key],
-          });
-        }
-        const output = (descriptor.get as Function).call(thisObject);
-        return output;
-      };
-    }
-    if (descriptor && descriptor.set) {
-      mutations[func] = (state: S, payload: any) => {
-        (descriptor.set as Function).call(state, payload);
-      };
-    }
-  }
-
-  Object.assign(stores[getClassName(target)].getters, getters);
-  Object.assign(stores[getClassName(target)].mutations, mutations);
-}
-
-export function getStates<T>(target: T, props: string[]) {
+export function getStates<T extends VuexModuleTarget<S, R>, S, R>(
+  target: T,
+  props: string[]
+) {
   const s: { [key: string]: any } = {};
   for (const prop of props) {
-    s[prop] = (target as any)[prop];
+    s[prop] = target[prop];
   }
   return s;
 }
 
-export function initStore<T>(target: T): void {
-  // tslint:disable-next-line: strict-type-predicates
+export function initStore<T extends VuexModuleTarget<S, R>, S, R>(
+  target: T
+): void {
   if (typeof stores[getClassName(target)] === 'undefined') {
     stores[getClassName(target)] = {
       namespaced: true,

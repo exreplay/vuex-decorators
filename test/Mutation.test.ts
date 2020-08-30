@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { VuexClass, ExportVuexStore, Getter, Mutation } from '../src';
+import { VuexClass, ExportVuexStore, Getter, Mutation, config } from '../src';
 
 Vue.use(Vuex);
 
@@ -25,6 +25,8 @@ const store = new Vuex.Store({
     [tm.moduleName as string]: tm,
   },
 });
+
+config.store = store;
 
 test('check if mutation exists and is a function', () => {
   expect(tm.mutations).toEqual({ setTest: expect.any(Function) });
