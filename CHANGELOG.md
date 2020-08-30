@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/exreplay/vuex-decorators/compare/v3.2.1...v3.3.0) (2020-08-30)
+
+
+### Features
+
+* this context inside class ([#9](https://github.com/exreplay/vuex-decorators/issues/9)) ([da4a103](https://github.com/exreplay/vuex-decorators/commit/da4a1031d96d768fe9a6e01b6b92a23b34246cd2))
+
 ### [3.2.1](https://github.com/exreplay/vuex-decorators/compare/v3.2.0...v3.2.1) (2020-05-24)
 
 ## [3.2.0](https://github.com/exreplay/vuex-decorators/compare/v3.1.0...v3.2.0) (2020-05-24)
